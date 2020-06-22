@@ -15,9 +15,9 @@ COPY package.json /usr/src/app
 
 RUN npm install --production
 
-RUN cd ferryman && npm install --production && cd ..
-
 COPY . /usr/src/app
+
+RUN cd ferryman && npm install --production && cd ..
 
 RUN chown -R node:node .
 
