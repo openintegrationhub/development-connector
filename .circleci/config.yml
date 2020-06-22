@@ -51,7 +51,7 @@ jobs:
       - run:
           command: |
             echo "$DOCKERHUB_PASS" | docker login -u "$DOCKERHUB_USERNAME" --password-stdin
-            docker push openintegrationhub/snazzy-transformer:latest
+            docker push openintegrationhub/dev-connector:latest
 workflows:
   version: 2
   build-master:
