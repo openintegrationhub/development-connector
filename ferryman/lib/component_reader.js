@@ -63,6 +63,7 @@ ComponentReader.prototype.loadTriggerOrAction = function loadTriggerOrAction(nam
 
     try {
         log.trace('Trying to find module at: %s', modulePath);
+
         result = require(modulePath);
         return Q.resolve(result);
     } catch (err) {

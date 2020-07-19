@@ -1,4 +1,4 @@
-FROM node:10-alpine
+FROM node:12-alpine
 LABEL NAME="development-connector"
 LABEL MAINTAINER Johannes Knoop "jknoop@wice.de"
 LABEL SUMMARY="This image is used to start the Developmet Connector for OIH"

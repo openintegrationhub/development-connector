@@ -44,7 +44,7 @@ describe('Integration Test for globalRun', () => {
 
         nock(`https://localhost:2345/snapshots/flows/5559edd38968ec0736000003/steps`)
             .get(`/step_1`)
-            .reply(200,{ data: { snapshot: 'blubb' } });
+            .reply(200, { data: { snapshot: 'blubb' } });
     });
 
     afterEach(async () => {
@@ -78,7 +78,7 @@ describe('Integration Test for globalRun', () => {
         });
         afterEach(() => amqpHelper.cleanUp());
 
-        for (let protocolVersion of [1,2]) {
+        for (let protocolVersion of [1, 2]) {
             describe(`for output protocolVersion ${protocolVersion}`, () => {
 
                 let encoding;
@@ -139,7 +139,7 @@ describe('Integration Test for globalRun', () => {
                         threadId,
                         parentMessageId,
                         'protocolVersion': protocolVersion,
-                        'x-eio-routing-key': env.ELASTICIO_DATA_ROUTING_KEY
+                        'x-eio-routing-key': env.ELASTICIO_OUTPUT_ROUTING_KEY
                     });
 
                     delete properties.headers;
@@ -228,7 +228,7 @@ describe('Integration Test for globalRun', () => {
                         threadId,
                         parentMessageId,
                         'protocolVersion': protocolVersion,
-                        'x-eio-routing-key': env.ELASTICIO_DATA_ROUTING_KEY
+                        'x-eio-routing-key': env.ELASTICIO_OUTPUT_ROUTING_KEY
                     });
 
                     delete properties.headers;
@@ -327,7 +327,7 @@ describe('Integration Test for globalRun', () => {
                 //         'function': env.ELASTICIO_FUNCTION,
                 //         parentMessageId,
                 //         'protocolVersion': protocolVersion,
-                //         'x-eio-routing-key': env.ELASTICIO_DATA_ROUTING_KEY
+                //         'x-eio-routing-key': env.ELASTICIO_OUTPUT_ROUTING_KEY
                 //     });
                 //
                 //     expect(passthrough.step_1).to.deep.eql(psMsg.passthrough.step_1);
@@ -439,7 +439,7 @@ describe('Integration Test for globalRun', () => {
                 //             'function': env.ELASTICIO_FUNCTION,
                 //             parentMessageId,
                 //             'protocolVersion': protocolVersion,
-                //             'x-eio-routing-key': env.ELASTICIO_DATA_ROUTING_KEY
+                //             'x-eio-routing-key': env.ELASTICIO_OUTPUT_ROUTING_KEY
                 //         });
                 //
                 //         delete properties.headers;
@@ -543,7 +543,7 @@ describe('Integration Test for globalRun', () => {
                 //         'function': env.ELASTICIO_FUNCTION,
                 //         parentMessageId,
                 //         protocolVersion,
-                //         'x-eio-routing-key': env.ELASTICIO_DATA_ROUTING_KEY
+                //         'x-eio-routing-key': env.ELASTICIO_OUTPUT_ROUTING_KEY
                 //     });
                 //
                 //     delete properties.headers;
@@ -656,7 +656,7 @@ describe('Integration Test for globalRun', () => {
                                 'function': env.ELASTICIO_FUNCTION,
                                 protocolVersion,
                                 threadId,
-                                'x-eio-routing-key': env.ELASTICIO_DATA_ROUTING_KEY
+                                'x-eio-routing-key': env.ELASTICIO_OUTPUT_ROUTING_KEY
                             });
 
                             expect(body).to.deep.equal({
@@ -789,7 +789,7 @@ describe('Integration Test for globalRun', () => {
                                 'function': env.ELASTICIO_FUNCTION,
                                 'protocolVersion': protocolVersion,
                                 threadId,
-                                'x-eio-routing-key': env.ELASTICIO_DATA_ROUTING_KEY
+                                'x-eio-routing-key': env.ELASTICIO_OUTPUT_ROUTING_KEY
                             });
 
                             expect(body).to.deep.equal({
@@ -885,7 +885,7 @@ describe('Integration Test for globalRun', () => {
                                 'function': ferrymanSettings.FUNCTION,
                                 'protocolVersion': protocolVersion,
                                 threadId,
-                                'x-eio-routing-key': env.ELASTICIO_DATA_ROUTING_KEY
+                                'x-eio-routing-key': env.ELASTICIO_OUTPUT_ROUTING_KEY
                             });
 
                             expect(body).to.deep.equal({
@@ -952,7 +952,7 @@ describe('Integration Test for globalRun', () => {
                                 'function': ferrymanSettings.FUNCTION,
                                 'protocolVersion': protocolVersion,
                                 threadId,
-                                'x-eio-routing-key': env.ELASTICIO_DATA_ROUTING_KEY
+                                'x-eio-routing-key': env.ELASTICIO_OUTPUT_ROUTING_KEY
                             });
 
                             expect(body).to.deep.equal({
@@ -1037,7 +1037,7 @@ describe('Integration Test for globalRun', () => {
                             threadId,
                             parentMessageId,
                             protocolVersion,
-                            'x-eio-routing-key': env.ELASTICIO_DATA_ROUTING_KEY
+                            'x-eio-routing-key': env.ELASTICIO_OUTPUT_ROUTING_KEY
                         });
 
                         expect(body).to.deep.equal({
@@ -1107,7 +1107,7 @@ describe('Integration Test for globalRun', () => {
                             'reply_to': amqpHelper.httpReplyQueueRoutingKey,
                             'protocolVersion': 1,
                             threadId,
-                            'x-eio-routing-key': env.ELASTICIO_DATA_ROUTING_KEY
+                            'x-eio-routing-key': env.ELASTICIO_OUTPUT_ROUTING_KEY
                         });
 
                         expect(emittedMessage).to.eql({

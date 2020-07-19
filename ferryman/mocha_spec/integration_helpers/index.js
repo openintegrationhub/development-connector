@@ -36,7 +36,7 @@ class AmqpHelper extends EventEmitter {
 
         env.ELASTICIO_BACK_CHANNEL = PREFIX + ':back_channel';
 
-        env.ELASTICIO_DATA_ROUTING_KEY = PREFIX + ':routing_key:message';
+        env.ELASTICIO_OUTPUT_ROUTING_KEY = PREFIX + ':routing_key:message';
         env.ELASTICIO_ERROR_ROUTING_KEY = PREFIX + ':routing_key:error';
         env.ELASTICIO_REBOUND_ROUTING_KEY = PREFIX + ':routing_key:rebound';
         env.ELASTICIO_SNAPSHOT_ROUTING_KEY = PREFIX + ':routing_key:snapshot';
@@ -58,7 +58,7 @@ class AmqpHelper extends EventEmitter {
 
         const protocolVersion = Number(msgHeaders.protocolVersion || 1);
 
-        let routingKey = env.ELASTICIO_DATA_ROUTING_KEY;
+        let routingKey = env.ELASTICIO_OUTPUT_ROUTING_KEY;
 
         // if ('x-eio-routing-key' in message.headers) {
         //     routingKey = message.headers['x-eio-routing-key'];
@@ -107,7 +107,7 @@ class AmqpHelper extends EventEmitter {
         yield subscriptionChannel.bindQueue(
             env.ELASTICIO_LISTEN_MESSAGES_ON,
             env.ELASTICIO_LISTEN_MESSAGES_ON,
-            env.ELASTICIO_DATA_ROUTING_KEY);
+            env.ELASTICIO_OUTPUT_ROUTING_KEY);
 
         // yield backChannel.bindQueue(
         //     env.ELASTICIO_BACK_CHANNEL,
@@ -117,7 +117,7 @@ class AmqpHelper extends EventEmitter {
         yield publishChannel.bindQueue(
             this.nextStepQueue,
             env.ELASTICIO_PUBLISH_MESSAGES_TO,
-            env.ELASTICIO_DATA_ROUTING_KEY);
+            env.ELASTICIO_OUTPUT_ROUTING_KEY);
 
         yield publishChannel.bindQueue(
             this.nextStepErrorQueue,
@@ -159,7 +159,7 @@ class AmqpHelper extends EventEmitter {
 
     prepare() {
         const that = this;
-        return co(function * gen() {
+        return co(function* gen() {
             that.prepareEnv();
             yield that.prepareQueues();
 
@@ -245,7 +245,7 @@ class AmqpHelperGlobal extends EventEmitter {
 
         env.ELASTICIO_BACK_CHANNEL = PREFIX + ':back_channel';
 
-        env.ELASTICIO_DATA_ROUTING_KEY = PREFIX + ':routing_key:message';
+        env.ELASTICIO_OUTPUT_ROUTING_KEY = PREFIX + ':routing_key:output';
         env.ELASTICIO_ERROR_ROUTING_KEY = PREFIX + ':routing_key:error';
         env.ELASTICIO_REBOUND_ROUTING_KEY = PREFIX + ':routing_key:rebound';
         env.ELASTICIO_SNAPSHOT_ROUTING_KEY = PREFIX + ':routing_key:snapshot';
@@ -266,7 +266,7 @@ class AmqpHelperGlobal extends EventEmitter {
 
         const protocolVersion = Number(msgHeaders.protocolVersion || 1);
 
-        let routingKey = env.ELASTICIO_DATA_ROUTING_KEY;
+        let routingKey = env.ELASTICIO_OUTPUT_ROUTING_KEY;
 
         // if ('x-eio-routing-key' in message.headers) {
         //     routingKey = message.headers['x-eio-routing-key'];
@@ -315,7 +315,7 @@ class AmqpHelperGlobal extends EventEmitter {
         yield subscriptionChannel.bindQueue(
             env.ELASTICIO_LISTEN_MESSAGES_ON,
             env.ELASTICIO_LISTEN_MESSAGES_ON,
-            env.ELASTICIO_DATA_ROUTING_KEY);
+            env.ELASTICIO_OUTPUT_ROUTING_KEY);
 
         // yield backChannel.bindQueue(
         //     env.ELASTICIO_BACK_CHANNEL,
@@ -325,7 +325,7 @@ class AmqpHelperGlobal extends EventEmitter {
         yield publishChannel.bindQueue(
             this.nextStepQueue,
             env.ELASTICIO_BACK_CHANNEL,
-            env.ELASTICIO_DATA_ROUTING_KEY);
+            env.ELASTICIO_OUTPUT_ROUTING_KEY);
 
         yield publishChannel.bindQueue(
             this.nextStepErrorQueue,
@@ -367,7 +367,7 @@ class AmqpHelperGlobal extends EventEmitter {
 
     prepare() {
         const that = this;
-        return co(function * gen() {
+        return co(function* gen() {
             that.prepareEnv();
             yield that.prepareQueues();
 

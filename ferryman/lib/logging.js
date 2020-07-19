@@ -39,7 +39,7 @@ const log = bunyan.createLogger({
     level: level,
     serializers: bunyan.stdSerializers
 })
-    .child(data);
+// .child(data);
 
 _.bindAll(log, [
     'fatal',
@@ -66,7 +66,7 @@ function ComponentLogger(options) {
         level: level,
         serializers: bunyan.stdSerializers
     })
-        .child(data)
+        // .child(data)
         .child(options);
 
     function decorateLogger(destination, logger) {

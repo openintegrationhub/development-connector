@@ -74,6 +74,7 @@ class Ferryman {
 
         if (skipInit) {
             stepData = await this.getSnapShot(flowId, stepId, token);
+            // stepData = await apiClient.tasks.retrieveStep(flowId, stepId);
         } else {
             stepData = await apiClient.tasks.retrieveStep(flowId, stepId);
         }
@@ -86,7 +87,7 @@ class Ferryman {
         // this.stepData = Object.assign({}, this.stepData, stepData);
         this.stepData = Object.assign({}, this.stepData, stepData);
 
-        if (!skipInit) {await componentReader.init(compPath);}
+        if (!skipInit) { await componentReader.init(compPath); }
     }
 
     async getSnapShot(flowId, stepId, token) {
@@ -97,9 +98,7 @@ class Ferryman {
             headers: {
                 'accept': 'application/json',
                 'Content-Type': 'application/json',
-                'headers': {
-                    authorization: `Bearer ${token}`
-                }
+                Authorization: `Bearer ${token}`
             },
             json: true,
             resolveWithFullResponse: true
@@ -107,13 +106,16 @@ class Ferryman {
         const result = await request(getOptions);
 
         if (result.statusCode === 200) {
+            console.log('success')
+            console.log(result)
             return result.body.data;
         }
 
         if (result.statusCode === 404) {
+            console.log('not found....')
             return null;
         }
-
+        console.log(getOptions)
         log.warn(`Failed to fetch the snapshot ${flowId}:${stepId}`);
 
         return null;
@@ -210,6 +212,7 @@ class Ferryman {
                 passedFunction ? passedFunction : settings.FUNCTION
             );
             if (!module[moduleFunction]) {
+                log.warn(module)
                 log.warn(`invokeModuleFunction – ${moduleFunction} is not found`);
                 return Promise.resolve();
             }
@@ -309,6 +312,7 @@ class Ferryman {
         this.stepId = message.properties.headers.stepId;
 
         // todo: Find a way to do this without overwriting this.stepData
+        console.log(message)
         await this.prepare(true, message.properties.headers.authToken);
 
         const settings = this.settings;

@@ -43,7 +43,7 @@ describe('Ferryman', () => {
 
         envVars.ELASTICIO_BACK_CHANNEL = 'backChannel:5527f0ea43238e5d5f000001';
 
-        envVars.ELASTICIO_DATA_ROUTING_KEY = '5559edd38968ec0736000003:step_1:1432205514864:message';
+        envVars.ELASTICIO_OUTPUT_ROUTING_KEY = '5559edd38968ec0736000003:step_1:1432205514864:output';
         envVars.ELASTICIO_ERROR_ROUTING_KEY = '5559edd38968ec0736000003:step_1:1432205514864:error';
         envVars.ELASTICIO_REBOUND_ROUTING_KEY = '5559edd38968ec0736000003:step_1:1432205514864:rebound';
         envVars.ELASTICIO_SNAPSHOT_ROUTING_KEY = '5559edd38968ec0736000003:step_1:1432205514864:snapshot';
@@ -61,12 +61,14 @@ describe('Ferryman', () => {
 
         nock(`https://localhost:2345/snapshots/flows/${flowId}/steps`)
             .get(`/${stepId}`)
-            .reply(200, { data: {
-                snapshot: {
-                    id: '123456789',
-                    value: 'abc'
+            .reply(200, {
+                data: {
+                    snapshot: {
+                        id: '123456789',
+                        value: 'abc'
+                    }
                 }
-            } });
+            });
     });
 
     afterEach(() => {
