@@ -41,7 +41,7 @@ class Sailor {
         this.throttles = {
             // 100 Messages per Second
             data: pThrottle(() => Promise.resolve(true),
-                settings.DATA_RATE_LIMIT,
+                settings.OUTPUT_RATE_LIMIT,
                 settings.RATE_INTERVAL),
             error: pThrottle(() => Promise.resolve(true),
                 settings.ERROR_RATE_LIMIT,

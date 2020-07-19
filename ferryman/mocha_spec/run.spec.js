@@ -1,7 +1,7 @@
-'use strict';
+
 
 const nock = require('nock');
-const expect = require('chai').expect;
+const { expect } = require('chai');
 const uuid = require('uuid');
 const sinonjs = require('sinon');
 const logging = require('../lib/logging.js');
@@ -9,9 +9,9 @@ const helpers = require('./integration_helpers');
 const encryptor = require('../lib/encryptor');
 const settings = require('../lib/settings');
 
-const env = process.env;
+const { env } = process;
 function requireRun() {
-    //@todo it would be great to use something like this https://github.com/jveski/shelltest
+    // @todo it would be great to use something like this https://github.com/jveski/shelltest
     const path = '../run.js';
     const resolved = require.resolve(path);
     delete require.cache[resolved];
@@ -20,11 +20,11 @@ function requireRun() {
 describe('Integration Test', () => {
     const customers = [
         {
-            name: 'Homer Simpson'
+            name: 'Homer Simpson',
         },
         {
-            name: 'Marge Simpson'
-        }
+            name: 'Marge Simpson',
+        },
     ];
     let inputMessage;
     let runner;
@@ -32,11 +32,11 @@ describe('Integration Test', () => {
     beforeEach(() => {
         inputMessage = {
             headers: {
-                stepId: 'step_1'
+                stepId: 'step_1',
             },
             body: {
-                message: 'Just do it!'
-            }
+                message: 'Just do it!',
+            },
         };
         helpers.prepareEnv();
         env.ELASTICIO_FUNCTION = 'init_trigger';
@@ -64,7 +64,7 @@ describe('Integration Test', () => {
         let threadId;
         let messageId;
 
-        let amqpHelper = helpers.amqp();
+        const amqpHelper = helpers.amqp();
         beforeEach(async () => {
             await amqpHelper.prepare();
             threadId = uuid.v4();
@@ -73,9 +73,8 @@ describe('Integration Test', () => {
         });
         afterEach(() => amqpHelper.cleanUp());
 
-        for (let protocolVersion of [1,2]) {
+        for (const protocolVersion of [1, 2]) {
             describe(`for output protocolVersion ${protocolVersion}`, () => {
-
                 let encoding;
                 beforeEach(() => {
                     env.ELASTICIO_PROTOCOL_VERSION = protocolVersion;
@@ -88,7 +87,7 @@ describe('Integration Test', () => {
                     nock('https://api.acme.com')
                         .post('/subscribe')
                         .reply(200, {
-                            id: 'subscription_12345'
+                            id: 'subscription_12345',
                         })
                         .get('/customers')
                         .reply(200, customers);
@@ -97,15 +96,15 @@ describe('Integration Test', () => {
 
                     await amqpHelper.publishMessage(inputMessage, {
                         parentMessageId,
-                        threadId
+                        threadId,
                     });
 
                     const [{ message, queueName }] = await Promise.all([
                         new Promise(resolve => amqpHelper.on(
                             'data',
-                            (message, queueName) => resolve({ message, queueName })
+                            (message, queueName) => resolve({ message, queueName }),
                         )),
-                        runner.run(settings.readFrom(process.env))
+                        runner.run(settings.readFrom(process.env)),
                     ]);
 
                     const { properties, content } = message;
@@ -129,7 +128,7 @@ describe('Integration Test', () => {
                         function: env.ELASTICIO_FUNCTION,
                         threadId,
                         parentMessageId,
-                        protocolVersion: protocolVersion
+                        protocolVersion,
                     });
 
                     delete properties.headers;
@@ -147,18 +146,18 @@ describe('Integration Test', () => {
                         type: undefined,
                         userId: undefined,
                         appId: undefined,
-                        clusterId: undefined
+                        clusterId: undefined,
                     });
 
                     expect(body).to.deep.equal({
                         originalMsg: inputMessage,
-                        customers: customers,
+                        customers,
                         subscription: {
                             id: 'subscription_12345',
                             cfg: {
-                                apiKey: 'secret'
-                            }
-                        }
+                                apiKey: 'secret',
+                            },
+                        },
                     });
                 });
 
@@ -169,7 +168,7 @@ describe('Integration Test', () => {
                     nock('https://api.acme.com')
                         .post('/subscribe')
                         .reply(200, {
-                            id: 'subscription_12345'
+                            id: 'subscription_12345',
                         })
                         .get('/customers')
                         .reply(200, customers);
@@ -178,11 +177,11 @@ describe('Integration Test', () => {
                         inputMessage,
                         {
                             parentMessageId,
-                            threadId
+                            threadId,
                         },
                         {
-                            protocolVersion: 2
-                        }
+                            protocolVersion: 2,
+                        },
                     );
 
                     runner = requireRun();
@@ -190,9 +189,9 @@ describe('Integration Test', () => {
                     const [{ message, queueName }] = await Promise.all([
                         new Promise(resolve => amqpHelper.on(
                             'data',
-                            (message, queueName) => resolve({ message, queueName })
+                            (message, queueName) => resolve({ message, queueName }),
                         )),
-                        runner.run(settings.readFrom(process.env))
+                        runner.run(settings.readFrom(process.env)),
                     ]);
 
                     const { properties, content } = message;
@@ -216,7 +215,7 @@ describe('Integration Test', () => {
                         function: env.ELASTICIO_FUNCTION,
                         threadId,
                         parentMessageId,
-                        protocolVersion: protocolVersion
+                        protocolVersion,
                     });
 
                     delete properties.headers;
@@ -234,18 +233,18 @@ describe('Integration Test', () => {
                         type: undefined,
                         userId: undefined,
                         appId: undefined,
-                        clusterId: undefined
+                        clusterId: undefined,
                     });
 
                     expect(body).to.deep.equal({
                         originalMsg: inputMessage,
-                        customers: customers,
+                        customers,
                         subscription: {
                             id: 'subscription_12345',
                             cfg: {
-                                apiKey: 'secret'
-                            }
-                        }
+                                apiKey: 'secret',
+                            },
+                        },
                     });
                 });
 
@@ -255,29 +254,29 @@ describe('Integration Test', () => {
                     process.env.ELASTICIO_FUNCTION = 'emit_data';
 
                     helpers.mockApiTaskStepResponse({
-                        is_passthrough: true
+                        is_passthrough: true,
                     });
 
                     const psMsg = {
                         id: messageId,
                         headers: {
-                            'x-custom-component-header': '123_abc'
+                            'x-custom-component-header': '123_abc',
                         },
                         body: {
-                            message: 'Just do it'
+                            message: 'Just do it',
                         },
                         passthrough: {
                             step_1: { // emulating an another step – just to be sure that it's not lost
                                 id: '34',
                                 body: {},
-                                attachments: {}
-                            }
-                        }
+                                attachments: {},
+                            },
+                        },
                     };
 
                     await amqpHelper.publishMessage(psMsg, {
                         parentMessageId,
-                        threadId
+                        threadId,
                     });
 
                     runner = requireRun();
@@ -285,9 +284,9 @@ describe('Integration Test', () => {
                     const [{ message, queueName }] = await Promise.all([
                         new Promise(resolve => amqpHelper.on(
                             'data',
-                            (message, queueName) => resolve({ message, queueName })
+                            (message, queueName) => resolve({ message, queueName }),
                         )),
-                        runner.run(settings.readFrom(process.env))
+                        runner.run(settings.readFrom(process.env)),
                     ]);
 
                     const { properties, content } = message;
@@ -311,7 +310,7 @@ describe('Integration Test', () => {
                         compId: env.ELASTICIO_COMP_ID,
                         function: env.ELASTICIO_FUNCTION,
                         parentMessageId,
-                        protocolVersion: protocolVersion
+                        protocolVersion,
                     });
 
                     expect(passthrough.step_1).to.deep.eql(psMsg.passthrough.step_1);
@@ -319,7 +318,7 @@ describe('Integration Test', () => {
                     expect(passthrough.step_2.headers).to.deep.eql(psMsg.headers);
                     expect(passthrough.step_2.body).to.deep.eql({
                         hai: 'there',
-                        id: 'someId'
+                        id: 'someId',
                     });
 
                     delete properties.headers;
@@ -337,7 +336,7 @@ describe('Integration Test', () => {
                         type: undefined,
                         userId: undefined,
                         appId: undefined,
-                        clusterId: undefined
+                        clusterId: undefined,
                     });
                 });
 
@@ -352,28 +351,28 @@ describe('Integration Test', () => {
                         sailorSettings.NO_SELF_PASSTRHOUGH = true;
 
                         helpers.mockApiTaskStepResponse({
-                            is_passthrough: true
+                            is_passthrough: true,
                         });
 
                         const psMsg = {
                             headers: {
-                                stepId: 'step_1'
+                                stepId: 'step_1',
                             },
                             body: {
-                                message: 'Just do it!'
+                                message: 'Just do it!',
                             },
                             passthrough: {
                                 step_oth: { // emulating an another step – just to be sure that it's not lost
                                     id: 'id-56',
                                     body: { a: 1 },
-                                    attachments: {}
-                                }
-                            }
+                                    attachments: {},
+                                },
+                            },
                         };
 
                         await amqpHelper.publishMessage(psMsg, {
                             parentMessageId,
-                            threadId
+                            threadId,
                         });
 
                         runner = requireRun();
@@ -381,9 +380,9 @@ describe('Integration Test', () => {
                         const [{ message, queueName }] = await Promise.all([
                             new Promise(resolve => amqpHelper.on(
                                 'data',
-                                (message, queueName) => resolve({ message, queueName })
+                                (message, queueName) => resolve({ message, queueName }),
                             )),
-                            runner.run(sailorSettings)
+                            runner.run(sailorSettings),
                         ]);
 
                         const { properties, content } = message;
@@ -394,12 +393,12 @@ describe('Integration Test', () => {
                             step_oth: {
                                 id: 'id-56',
                                 body: { a: 1 },
-                                attachments: {}
+                                attachments: {},
                             },
                             step_1: {
                                 headers: inputMessage.headers,
-                                body: inputMessage.body
-                            }
+                                body: inputMessage.body,
+                            },
                         });
 
                         expect(properties.headers.messageId).to.be.a('string');
@@ -419,7 +418,7 @@ describe('Integration Test', () => {
                             compId: env.ELASTICIO_COMP_ID,
                             function: env.ELASTICIO_FUNCTION,
                             parentMessageId,
-                            protocolVersion: protocolVersion
+                            protocolVersion,
                         });
 
                         delete properties.headers;
@@ -437,20 +436,20 @@ describe('Integration Test', () => {
                             type: undefined,
                             userId: undefined,
                             appId: undefined,
-                            clusterId: undefined
+                            clusterId: undefined,
                         });
-                    }
+                    },
                 );
 
                 it('should work well with async process function emitting data', async () => {
                     process.env.ELASTICIO_STEP_ID = 'step_2';
                     process.env.ELASTICIO_FLOW_ID = '5559edd38968ec0736000003';
                     process.env.ELASTICIO_FUNCTION = 'async_trigger';
-                    process.env.ELASTICIO_DATA_RATE_LIMIT = '1';
+                    process.env.ELASTICIO_OUTPUT_RATE_LIMIT = '1';
                     process.env.ELASTICIO_RATE_INTERVAL = '110';
 
                     helpers.mockApiTaskStepResponse({
-                        is_passthrough: true
+                        is_passthrough: true,
                     });
 
                     const psMsg = Object.assign(inputMessage, {
@@ -458,18 +457,18 @@ describe('Integration Test', () => {
                             step_oth: { // emulating an another step – just to be sure that it's not lost
                                 id: 'm-34',
                                 body: {},
-                                attachments: {}
-                            }
+                                attachments: {},
+                            },
                         },
                         headers: {
                             'x-custom-component-header': '123_abc',
-                            'stepId': 'step_1'
-                        }
+                            stepId: 'step_1',
+                        },
                     });
 
                     await amqpHelper.publishMessage(psMsg, {
                         parentMessageId,
-                        threadId
+                        threadId,
                     });
 
                     runner = requireRun();
@@ -477,9 +476,9 @@ describe('Integration Test', () => {
                     const [{ message, queueName }] = await Promise.all([
                         new Promise(resolve => amqpHelper.on(
                             'data',
-                            (message, queueName) => resolve({ message, queueName })
+                            (message, queueName) => resolve({ message, queueName }),
                         )),
-                        runner.run(settings.readFrom(process.env))
+                        runner.run(settings.readFrom(process.env)),
                     ]);
 
                     const { properties, content } = message;
@@ -490,15 +489,15 @@ describe('Integration Test', () => {
                     expect(passthrough.step_oth).to.deep.eql({
                         id: 'm-34',
                         body: {},
-                        attachments: {}
+                        attachments: {},
                     });
 
                     expect(passthrough.step_2.headers).to.deep.eql({
-                        'x-custom-component-header': '123_abc'
+                        'x-custom-component-header': '123_abc',
                     });
                     expect(passthrough.step_2.body).to.deep.eql({
                         hai: 'there',
-                        id: 'someId'
+                        id: 'someId',
                     });
 
                     expect(properties.headers.messageId).to.be.a('string');
@@ -519,7 +518,7 @@ describe('Integration Test', () => {
                         compId: env.ELASTICIO_COMP_ID,
                         function: env.ELASTICIO_FUNCTION,
                         parentMessageId,
-                        protocolVersion
+                        protocolVersion,
                     });
 
                     delete properties.headers;
@@ -537,7 +536,7 @@ describe('Integration Test', () => {
                         type: undefined,
                         userId: undefined,
                         appId: undefined,
-                        clusterId: undefined
+                        clusterId: undefined,
                     });
                 });
 
@@ -556,7 +555,7 @@ describe('Integration Test', () => {
                                 .reply(200, (uri, requestBody) => {
                                     startupRegistrationRequest = requestBody;
                                     return {
-                                        status: 'ok'
+                                        status: 'ok',
                                     };
                                 });
 
@@ -568,8 +567,8 @@ describe('Integration Test', () => {
                                 .matchHeader('Connection', 'Keep-Alive')
                                 .post('/sailor-support/hooks/task/5559edd38968ec0736000003/startup/data', {
                                     subscriptionResult: {
-                                        status: 'ok'
-                                    }
+                                        status: 'ok',
+                                    },
                                 })
                                 .reply(201, (uri, requestBody) => {
                                     hooksDataRequest = requestBody;
@@ -580,7 +579,7 @@ describe('Integration Test', () => {
                             nock('https://api.acme.com')
                                 .post('/subscribe')
                                 .reply(200, {
-                                    id: 'subscription_12345'
+                                    id: 'subscription_12345',
                                 })
                                 .get('/customers')
                                 .reply(200, customers);
@@ -592,9 +591,9 @@ describe('Integration Test', () => {
                             const [{ message, queueName }] = await Promise.all([
                                 new Promise(resolve => amqpHelper.on(
                                     'data',
-                                    (message, queueName) => resolve({ message, queueName })
+                                    (message, queueName) => resolve({ message, queueName }),
                                 )),
-                                runner.run(sailorSettings)
+                                runner.run(sailorSettings),
                             ]);
 
                             const { properties, content } = message;
@@ -602,13 +601,13 @@ describe('Integration Test', () => {
                             expect(queueName).to.eql(amqpHelper.nextStepQueue);
 
                             expect(startupRegistrationRequest).to.deep.equal({
-                                data: 'startup'
+                                data: 'startup',
                             });
 
                             expect(hooksDataRequest).to.deep.equal({
                                 subscriptionResult: {
-                                    status: 'ok'
-                                }
+                                    status: 'ok',
+                                },
                             });
 
                             expect(startupRegistrationNock.isDone()).to.be.ok;
@@ -631,18 +630,18 @@ describe('Integration Test', () => {
                                 compId: env.ELASTICIO_COMP_ID,
                                 function: env.ELASTICIO_FUNCTION,
                                 protocolVersion,
-                                threadId
+                                threadId,
                             });
 
                             expect(body).to.deep.equal({
                                 originalMsg: inputMessage,
-                                customers: customers,
+                                customers,
                                 subscription: {
                                     id: 'subscription_12345',
                                     cfg: {
-                                        apiKey: 'secret'
-                                    }
-                                }
+                                        apiKey: 'secret',
+                                    },
+                                },
                             });
                         });
                     });
@@ -655,7 +654,7 @@ describe('Integration Test', () => {
                                 .reply(200, (uri, requestBody) => {
                                     startupRegistrationRequest = requestBody;
                                     return {
-                                        status: 'ok'
+                                        status: 'ok',
                                     };
                                 });
 
@@ -669,15 +668,15 @@ describe('Integration Test', () => {
                                 .matchHeader('Connection', 'Keep-Alive')
                                 .post('/sailor-support/hooks/task/5559edd38968ec0736000003/startup/data', {
                                     subscriptionResult: {
-                                        status: 'ok'
-                                    }
+                                        status: 'ok',
+                                    },
                                 })
                                 .reply(409, (uri, requestBody) => {
                                     hooksDataRequest1 = requestBody;
                                     return {
                                         error: 'Hooks data for the task already exist. Delete previous data first.',
                                         status: 409,
-                                        title: 'ConflictError'
+                                        title: 'ConflictError',
                                     };
                                 });
 
@@ -692,8 +691,8 @@ describe('Integration Test', () => {
                                 .matchHeader('Connection', 'Keep-Alive')
                                 .post('/sailor-support/hooks/task/5559edd38968ec0736000003/startup/data', {
                                     subscriptionResult: {
-                                        status: 'ok'
-                                    }
+                                        status: 'ok',
+                                    },
                                 })
                                 .reply(201, (uri, requestBody) => {
                                     hooksDataRequest2 = requestBody;
@@ -704,7 +703,7 @@ describe('Integration Test', () => {
                             nock('https://api.acme.com')
                                 .post('/subscribe')
                                 .reply(200, {
-                                    id: 'subscription_12345'
+                                    id: 'subscription_12345',
                                 })
                                 .get('/customers')
                                 .reply(200, customers);
@@ -716,9 +715,9 @@ describe('Integration Test', () => {
                             const [{ message, queueName }] = await Promise.all([
                                 new Promise(resolve => amqpHelper.on(
                                     'data',
-                                    (message, queueName) => resolve({ message, queueName })
+                                    (message, queueName) => resolve({ message, queueName }),
                                 )),
-                                runner.run(sailorSettings)
+                                runner.run(sailorSettings),
                             ]);
 
                             const { properties, content } = message;
@@ -726,7 +725,7 @@ describe('Integration Test', () => {
                             expect(queueName).to.eql(amqpHelper.nextStepQueue);
 
                             expect(startupRegistrationRequest).to.deep.equal({
-                                data: 'startup'
+                                data: 'startup',
                             });
 
                             expect(startupRegistrationNock.isDone()).to.be.ok;
@@ -736,14 +735,14 @@ describe('Integration Test', () => {
 
                             expect(hooksDataRequest1).to.deep.equal({
                                 subscriptionResult: {
-                                    status: 'ok'
-                                }
+                                    status: 'ok',
+                                },
                             });
 
                             expect(hooksDataRequest2).to.deep.equal({
                                 subscriptionResult: {
-                                    status: 'ok'
-                                }
+                                    status: 'ok',
+                                },
                             });
 
                             expect(properties.headers.messageId).to.be.a('string');
@@ -762,19 +761,19 @@ describe('Integration Test', () => {
                                 stepId: env.ELASTICIO_STEP_ID,
                                 compId: env.ELASTICIO_COMP_ID,
                                 function: env.ELASTICIO_FUNCTION,
-                                protocolVersion: protocolVersion,
-                                threadId
+                                protocolVersion,
+                                threadId,
                             });
 
                             expect(body).to.deep.equal({
                                 originalMsg: inputMessage,
-                                customers: customers,
+                                customers,
                                 subscription: {
                                     id: 'subscription_12345',
                                     cfg: {
-                                        apiKey: 'secret'
-                                    }
-                                }
+                                        apiKey: 'secret',
+                                    },
+                                },
                             });
                         });
                     });
@@ -790,7 +789,7 @@ describe('Integration Test', () => {
                                 .reply(200, (uri, requestBody) => {
                                     startupRegistrationRequest = requestBody;
                                     return {
-                                        status: 'ok'
+                                        status: 'ok',
                                     };
                                 });
 
@@ -812,7 +811,7 @@ describe('Integration Test', () => {
                             nock('https://api.acme.com')
                                 .post('/subscribe')
                                 .reply(200, {
-                                    id: 'subscription_12345'
+                                    id: 'subscription_12345',
                                 })
                                 .get('/customers')
                                 .reply(200, customers);
@@ -824,9 +823,9 @@ describe('Integration Test', () => {
                             const [{ message, queueName }] = await Promise.all([
                                 new Promise(resolve => amqpHelper.on(
                                     'data',
-                                    (message, queueName) => resolve({ message, queueName })
+                                    (message, queueName) => resolve({ message, queueName }),
                                 )),
-                                runner.run(sailorSettings)
+                                runner.run(sailorSettings),
                             ]);
 
                             const { properties, content } = message;
@@ -834,7 +833,7 @@ describe('Integration Test', () => {
                             expect(queueName).to.eql(amqpHelper.nextStepQueue);
 
                             expect(startupRegistrationRequest).to.deep.equal({
-                                data: 'startup'
+                                data: 'startup',
                             });
 
                             expect(startupRegistrationNock.isDone()).to.be.ok;
@@ -857,19 +856,19 @@ describe('Integration Test', () => {
                                 stepId: env.ELASTICIO_STEP_ID,
                                 compId: env.ELASTICIO_COMP_ID,
                                 function: sailorSettings.FUNCTION,
-                                protocolVersion: protocolVersion,
-                                threadId
+                                protocolVersion,
+                                threadId,
                             });
 
                             expect(body).to.deep.equal({
                                 originalMsg: inputMessage,
-                                customers: customers,
+                                customers,
                                 subscription: {
                                     id: 'subscription_12345',
                                     cfg: {
-                                        apiKey: 'secret'
-                                    }
-                                }
+                                        apiKey: 'secret',
+                                    },
+                                },
                             });
                         });
                     });
@@ -898,9 +897,9 @@ describe('Integration Test', () => {
                             const [{ message, queueName }] = await Promise.all([
                                 new Promise(resolve => amqpHelper.on(
                                     'data',
-                                    (message, queueName) => resolve({ message, queueName })
+                                    (message, queueName) => resolve({ message, queueName }),
                                 )),
-                                runner.run(sailorSettings)
+                                runner.run(sailorSettings),
                             ]);
 
                             const { properties, content } = message;
@@ -923,13 +922,13 @@ describe('Integration Test', () => {
                                 stepId: env.ELASTICIO_STEP_ID,
                                 compId: env.ELASTICIO_COMP_ID,
                                 function: sailorSettings.FUNCTION,
-                                protocolVersion: protocolVersion,
-                                threadId
+                                protocolVersion,
+                                threadId,
                             });
 
                             expect(body).to.deep.equal({
                                 originalMsg: inputMessage,
-                                customers: customers
+                                customers,
                             });
 
                             expect(hooksDataNock.isDone()).to.be.ok;
@@ -938,7 +937,6 @@ describe('Integration Test', () => {
                 });
 
                 describe('when env ELASTICIO_ADDITIONAL_VARS_FOR_HEADERS is set', () => {
-
                     beforeEach(() => {
                         env.ELASTICIO_ADDITIONAL_VARS_FOR_HEADERS = 'ELASTICIO_FIRST, ELASTICIO_SECOND_ELASTICIO_ENV ,'
                             + 'ELASTICIO_NOT_PRESENT';
@@ -956,14 +954,12 @@ describe('Integration Test', () => {
                     });
 
                     it('should run trigger successfully and pass additional vars to headers', async () => {
-
-
                         helpers.mockApiTaskStepResponse();
 
                         nock('https://api.acme.com')
                             .post('/subscribe')
                             .reply(200, {
-                                id: 'subscription_12345'
+                                id: 'subscription_12345',
                             })
                             .get('/customers')
                             .reply(200, customers);
@@ -972,15 +968,15 @@ describe('Integration Test', () => {
 
                         await amqpHelper.publishMessage(inputMessage, {
                             parentMessageId,
-                            threadId
+                            threadId,
                         });
 
                         const [{ message, queueName }] = await Promise.all([
                             new Promise(resolve => amqpHelper.on(
                                 'data',
-                                (message, queueName) => resolve({ message, queueName })
+                                (message, queueName) => resolve({ message, queueName }),
                             )),
-                            runner.run(settings.readFrom(process.env))
+                            runner.run(settings.readFrom(process.env)),
                         ]);
 
 
@@ -1008,26 +1004,24 @@ describe('Integration Test', () => {
                             function: env.ELASTICIO_FUNCTION,
                             threadId,
                             parentMessageId,
-                            protocolVersion
+                            protocolVersion,
                         });
 
                         expect(body).to.deep.equal({
                             originalMsg: inputMessage,
-                            customers: customers,
+                            customers,
                             subscription: {
                                 id: 'subscription_12345',
                                 cfg: {
-                                    apiKey: 'secret'
-                                }
-                            }
+                                    apiKey: 'secret',
+                                },
+                            },
                         });
                     });
-
                 });
 
                 describe('when reply_to header is set', () => {
                     it('should send http reply successfully', async () => {
-
                         env.ELASTICIO_FUNCTION = 'http_reply_action';
 
                         helpers.mockApiTaskStepResponse();
@@ -1035,14 +1029,14 @@ describe('Integration Test', () => {
                         nock('https://api.acme.com')
                             .post('/subscribe')
                             .reply(200, {
-                                id: 'subscription_12345'
+                                id: 'subscription_12345',
                             })
                             .get('/customers')
                             .reply(200, customers);
 
                         await amqpHelper.publishMessage(inputMessage, {}, {
                             reply_to: amqpHelper.httpReplyQueueRoutingKey,
-                            threadId
+                            threadId,
                         });
 
                         runner = requireRun();
@@ -1050,9 +1044,9 @@ describe('Integration Test', () => {
                         const [{ message, queueName }] = await Promise.all([
                             new Promise(resolve => amqpHelper.on(
                                 'data',
-                                (message, queueName) => resolve({ message, queueName })
+                                (message, queueName) => resolve({ message, queueName }),
                             )),
-                            runner.run(settings.readFrom(process.env))
+                            runner.run(settings.readFrom(process.env)),
                         ]);
 
                         const { properties, content } = message;
@@ -1077,15 +1071,15 @@ describe('Integration Test', () => {
                             function: env.ELASTICIO_FUNCTION,
                             reply_to: amqpHelper.httpReplyQueueRoutingKey,
                             protocolVersion: 1,
-                            threadId
+                            threadId,
                         });
 
                         expect(emittedMessage).to.eql({
                             headers: {
-                                'content-type': 'text/plain'
+                                'content-type': 'text/plain',
                             },
                             body: 'Ok',
-                            statusCode: 200
+                            statusCode: 200,
                         });
                     });
                 });
@@ -1109,9 +1103,9 @@ describe('Integration Test', () => {
                         const [{ message, queueName }] = await Promise.all([
                             new Promise(resolve => amqpHelper.on(
                                 'data',
-                                (message, queueName) => resolve({ message, queueName })
+                                (message, queueName) => resolve({ message, queueName }),
                             )),
-                            runner.run(sailorSettings)
+                            runner.run(sailorSettings),
                         ]);
 
                         const { properties, content } = message;
@@ -1127,13 +1121,12 @@ describe('Integration Test', () => {
                             userId: env.ELASTICIO_USER_ID,
                             stepId: env.ELASTICIO_STEP_ID,
                             compId: env.ELASTICIO_COMP_ID,
-                            function: env.ELASTICIO_FUNCTION
+                            function: env.ELASTICIO_FUNCTION,
                         });
                     });
                 });
             });
         }
-
     });
 
     describe('when sailor is being invoked for shutdown', () => {
@@ -1144,7 +1137,7 @@ describe('Integration Test', () => {
                 sailorSettings.HOOK_SHUTDOWN = '1';
 
                 const subsriptionResponse = {
-                    subId: '507'
+                    subId: '507',
                 };
 
                 let requestFromShutdownHook;
@@ -1153,7 +1146,7 @@ describe('Integration Test', () => {
                     .reply(200, (uri, requestBody) => {
                         requestFromShutdownHook = requestBody;
                         return {
-                            status: 'ok'
+                            status: 'ok',
                         };
                     });
 
@@ -1177,16 +1170,16 @@ describe('Integration Test', () => {
                     runner.run(sailorSettings),
                     new Promise(resolve =>
                         // hooksDataDeleteNock.on('replied', () => setTimeout(() => resolve(), 50)))
-                        hooksDataDeleteNock.on('replied', () => resolve()))
+                        hooksDataDeleteNock.on('replied', () => resolve())),
                 ]);
 
                 expect(hooksDataGetNock.isDone()).to.be.ok;
 
                 expect(requestFromShutdownHook).to.deep.equal({
                     cfg: {
-                        apiKey: 'secret'
+                        apiKey: 'secret',
                     },
-                    startupData: subsriptionResponse
+                    startupData: subsriptionResponse,
                 });
 
                 expect(requestFromShutdownNock.isDone()).to.be.ok;

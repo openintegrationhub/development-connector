@@ -466,7 +466,7 @@ describe('Integration Test for globalRun', () => {
                 //     process.env.ELASTICIO_STEP_ID = 'step_2';
                 //     process.env.ELASTICIO_FLOW_ID = '5559edd38968ec0736000003';
                 //     process.env.ELASTICIO_FUNCTION = 'async_trigger';
-                //     process.env.ELASTICIO_DATA_RATE_LIMIT = '1';
+                //     process.env.ELASTICIO_OUTPUT_RATE_LIMIT = '1';
                 //     process.env.ELASTICIO_RATE_INTERVAL = '110';
                 //
                 //     helpers.mockApiTaskStepResponse({
