@@ -1,6 +1,6 @@
 {
   "name": "@openintegrationhub/test-transformer",
-  "version": "0.0.1",
+  "version": "0.0.2",
   "description": "OIH Test Transformer",
   "homepage": "https://snazzycontacts.com/",
   "author": {
@@ -29,9 +29,9 @@
     "@elastic.io/jsonata-moment": "1.0.15",
     "bunyan": "^1.8.12",
     "bunyan-format": "^0.2.1",
-    "elasticio-node": "0.0.9",
     "jsonata": "^1.5.3",
-    "q": "^1.5.1"
+    "q": "^1.5.1",
+    "uuid": "^8.2.0"
   },
   "devDependencies": {
     "chai": "^3.5.0",
@@ -40,7 +40,7 @@
     "eslint-plugin-import": "^2.14.0",
     "eslint-plugin-json": "^1.2.1",
     "eslint-plugin-mocha": "^5.2.0",
-    "mocha": "^5.2.0"
+    "mocha": "^8.0.1"
   },
   "repository": {
     "type": "git",

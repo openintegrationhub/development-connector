@@ -2,7 +2,7 @@
 /* eslint-disable no-unused-expressions */
 
 const { expect } = require('chai');
-const { messages } = require('elasticio-node');
+const { newMessage } = require('../lib/helpers');
 const { personFromOih } = require('./seed/person');
 const testAction = require('../lib/actions/testAction');
 
@@ -10,7 +10,7 @@ const testAction = require('../lib/actions/testAction');
 describe('Transformation test', () => {
   it('should handle simple person tranformation in direction from OIH', () => {
     const exp = personFromOih();
-    return testAction.process(messages.newMessageWithBody(exp))
+    return testAction.process(newMessage(exp))
       .then((result) => {
         expect(result.body).to.be.an('object');
         expect(result.body.data.firstName).to.be.equal('John');
