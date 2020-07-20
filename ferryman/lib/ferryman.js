@@ -106,16 +106,13 @@ class Ferryman {
         const result = await request(getOptions);
 
         if (result.statusCode === 200) {
-            console.log('success')
-            console.log(result)
             return result.body.data;
         }
 
         if (result.statusCode === 404) {
-            console.log('not found....')
             return null;
         }
-        console.log(getOptions)
+
         log.warn(`Failed to fetch the snapshot ${flowId}:${stepId}`);
 
         return null;
@@ -374,7 +371,8 @@ class Ferryman {
             'function': action,
             'start': new Date().getTime(),
             'cid': cipher.id,
-            'x-eio-routing-key': routingKey
+            'x-eio-routing-key': routingKey,
+            'orchestratorToken': message.properties.headers.orchestratorToken
         };
         let module;
         try {

@@ -234,26 +234,26 @@ class Amqp {
             throw error;
         }
 
-        if (backChannel === true) {
-            return this.sendToExchange(settings.BACK_CHANNEL, routingKey, encryptedData, properties, throttle);
-        }
+        // if (backChannel === true) {
+        //     return this.sendToExchange(settings.BACK_CHANNEL, routingKey, encryptedData, properties, throttle);
+        // }
 
-        return this.sendToExchange(settings.PUBLISH_MESSAGES_TO, routingKey, encryptedData, properties, throttle);
+        return this.sendToExchange(settings.BACKCHANNEL_EXCHANGE, routingKey, encryptedData, properties, throttle);
     }
 
-    async sendData(data, headers, throttle) {
-        const properties = this._createPropsFromHeaders(headers);
-        const settings = this.settings;
-        const routingKey = getRoutingKeyFromHeaders(data.headers) || settings.DATA_ROUTING_KEY;
-        properties.headers.protocolVersion = settings.PROTOCOL_VERSION;
+    // async sendData(data, headers, throttle) {
+    //     const properties = this._createPropsFromHeaders(headers);
+    //     const settings = this.settings;
+    //     const routingKey = getRoutingKeyFromHeaders(data.headers) || settings.DATA_ROUTING_KEY;
+    //     properties.headers.protocolVersion = settings.PROTOCOL_VERSION;
 
-        return this.prepareMessageAndSendToExchange(data, properties, routingKey, throttle);
-    }
+    //     return this.prepareMessageAndSendToExchange(data, properties, routingKey, throttle);
+    // }
 
     async sendBackChannel(data, headers, throttle) {
         const properties = this._createPropsFromHeaders(headers);
         const settings = this.settings;
-        const routingKey = getRoutingKeyFromHeaders(data.headers) || settings.DATA_ROUTING_KEY;
+        const routingKey = getRoutingKeyFromHeaders(data.headers) || settings.OUTPUT_ROUTING_KEY;
         properties.headers.protocolVersion = settings.PROTOCOL_VERSION;
 
         return this.prepareMessageAndSendToExchange(data, properties, routingKey, throttle, true);
