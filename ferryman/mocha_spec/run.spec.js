@@ -12,6 +12,8 @@
 
 /* eslint no-shadow: 0 */ // --> OFF
 
+const jwt = require('jsonwebtoken');
+
 const nock = require('nock');
 const { expect } = require('chai');
 const uuid = require('uuid');
@@ -42,9 +44,19 @@ describe('Integration Test', () => {
   let runner;
 
   beforeEach(() => {
+    const orchestratorToken = jwt.sign({
+      flowId: 'flow_1',
+      stepId: 'step_1',
+      userId: 'user1234',
+      function: 'triggerme',
+      apiKey: '123456',
+      apiUsername: 'someuser@openintegrationhub.com',
+    }, 'somesecret');
+
     inputMessage = {
       headers: {
         stepId: 'step_1',
+        orchestratorToken,
       },
       body: {
         message: 'Just do it!',

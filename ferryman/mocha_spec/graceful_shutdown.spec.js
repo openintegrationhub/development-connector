@@ -1,4 +1,6 @@
 const { expect } = require('chai');
+const jwt = require('jsonwebtoken');
+
 const helpers = require('./integration_helpers');
 
 const { env } = process;
@@ -8,9 +10,19 @@ let fakeApiServer; // eslint-disable-line no-unused-vars
 describe('Graceful shutdown', function test() {
   this.timeout(helpers.ShellTester.TIMEOUT_DEFAULT * 1.1);
 
+  const orchestratorToken = jwt.sign({
+    flowId: 'flow_1',
+    stepId: 'step_1',
+    userId: 'user1234',
+    function: 'triggerme',
+    apiKey: '123456',
+    apiUsername: 'someuser@openintegrationhub.com',
+  }, 'somesecret');
+
   const inputMessage = {
     headers: {
       stepId: 'step_1',
+      orchestratorToken,
     },
     body: {
       message: 'test',
@@ -107,6 +119,7 @@ describe('Graceful shutdown', function test() {
 
       // make sure that incoming messages queue is empty
       const messagesLeft = await amqpHelper.retrieveAllMessagesNotConsumedBySailor();
+      console.log('messagesLeft', messagesLeft);
       expect(messagesLeft).to.have.lengthOf(0);
     });
   });
