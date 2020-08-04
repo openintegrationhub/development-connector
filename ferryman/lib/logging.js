@@ -12,27 +12,27 @@ if (process.env.NODE_ENV === 'test') {
 }
 
 
-const data = Object.assign(
-  _.pick(process.env, [
-    'ELASTICIO_API_USERNAME',
-    'ELASTICIO_COMP_ID',
-    'ELASTICIO_COMP_NAME',
-    'ELASTICIO_CONTAINER_ID',
-    'ELASTICIO_CONTRACT_ID',
-    'ELASTICIO_EXEC_ID',
-    'ELASTICIO_EXEC_TYPE',
-    'ELASTICIO_EXECUTION_RESULT_ID',
-    'ELASTICIO_FLOW_ID',
-    'ELASTICIO_FLOW_VERSION',
-    'ELASTICIO_FUNCTION',
-    'ELASTICIO_STEP_ID',
-    'ELASTICIO_TASK_USER_EMAIL',
-    'ELASTICIO_TENANT_ID',
-    'ELASTICIO_USER_ID',
-    'ELASTICIO_WORKSPACE_ID',
-  ]),
-  { tag: process.env.ELASTICIO_FLOW_ID },
-);
+// const data = Object.assign(
+//   _.pick(process.env, [
+//     'ELASTICIO_API_USERNAME',
+//     'ELASTICIO_COMP_ID',
+//     'ELASTICIO_COMP_NAME',
+//     'ELASTICIO_CONTAINER_ID',
+//     'ELASTICIO_CONTRACT_ID',
+//     'ELASTICIO_EXEC_ID',
+//     'ELASTICIO_EXEC_TYPE',
+//     'ELASTICIO_EXECUTION_RESULT_ID',
+//     'ELASTICIO_FLOW_ID',
+//     'ELASTICIO_FLOW_VERSION',
+//     'ELASTICIO_FUNCTION',
+//     'ELASTICIO_STEP_ID',
+//     'ELASTICIO_TASK_USER_EMAIL',
+//     'ELASTICIO_TENANT_ID',
+//     'ELASTICIO_USER_ID',
+//     'ELASTICIO_WORKSPACE_ID',
+//   ]),
+//   { tag: process.env.ELASTICIO_FLOW_ID },
+// );
 
 const log = bunyan.createLogger({
   name: 'sailor',
@@ -61,7 +61,7 @@ function criticalErrorAndExit(reason, err) {
 }
 
 function ComponentLogger(options) {
-  const logger = bunyan.createLogger({
+  const currentLogger = bunyan.createLogger({
     name: 'component',
     level,
     serializers: bunyan.stdSerializers,
@@ -70,9 +70,10 @@ function ComponentLogger(options) {
     .child(options);
 
   function decorateLogger(destination, logger) {
-    for (const type of ['trace', 'debug', 'info', 'warn', 'error', 'fatal']) {
+    for (const type of ['trace', 'debug', 'info', 'warn', 'error', 'fatal']) { // eslint-disable-line
       const originalMethod = logger[type];
-      destination[type] = function log() {
+      destination[type] = function log() { // eslint-disable-line
+        // eslint-disable-next-line prefer-rest-params
         const args = Array.prototype.slice.call(arguments);
 
         if (args.length && typeof args[0] !== 'string') {
@@ -83,13 +84,13 @@ function ComponentLogger(options) {
       };
     }
     const originalMethod = logger.child;
-    destination.child = function child(...args) {
+    destination.child = function child(...args) { // eslint-disable-line no-param-reassign
       const childLogger = originalMethod.call(logger, ...args);
       decorateLogger(childLogger, childLogger);
       return childLogger;
     };
   }
-  decorateLogger(this, logger);
+  decorateLogger(this, currentLogger);
 }
 
 

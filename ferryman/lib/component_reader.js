@@ -1,3 +1,8 @@
+
+/* eslint no-use-before-define: 0 */ // --> OFF
+/* eslint import/no-dynamic-require: 0 */ // --> OFF
+/* eslint global-require: 0 */ // --> OFF
+
 const Q = require('q');
 const _ = require('lodash');
 const path = require('path');

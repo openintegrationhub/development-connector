@@ -1,3 +1,6 @@
+
+/* eslint no-use-before-define: 0 */ // --> OFF
+
 const Q = require('q');
 const _ = require('lodash');
 const assert = require('assert');
@@ -11,8 +14,6 @@ const log = require('./logging');
 
 const { ComponentLogger } = log;
 
-exports.processService = processService;
-
 /**
  * @class ServiceExec
  * Represents execution context for service method
@@ -23,17 +24,17 @@ class ServiceExec extends EventEmitter {
   constructor({ logger, services }) {
     super();
     this.logger = logger;
-    this._services = services;
-    assert(this._services.apiClient, 'ServiceExec should be created with api client');
-    assert(this._services.config, 'ServiceExec should be created with config');
+    this._services = services; // eslint-disable-line no-underscore-dangle
+    assert(this._services.apiClient, 'ServiceExec should be created with api client'); // eslint-disable-line no-underscore-dangle
+    assert(this._services.config, 'ServiceExec should be created with config'); // eslint-disable-line no-underscore-dangle
   }
 
   getApiClient() {
-    return this._services.apiClient;
+    return this._services.apiClient; // eslint-disable-line no-underscore-dangle
   }
 
   getConfig() {
-    return this._services.config;
+    return this._services.config; // eslint-disable-line no-underscore-dangle
   }
 }
 
@@ -98,8 +99,8 @@ function processService(serviceMethod, env) {
     };
     // eslint-disable-next-line new-cap
     apiClient = RestApiClient(API_USERNAME, API_KEY, {
-      retryCount: parseInt(env.ELASTICIO_API_REQUEST_RETRY_ATTEMPTS),
-      retryDelay: parseInt(env.ELASTICIO_API_REQUEST_RETRY_DELAY),
+      retryCount: parseInt(env.ELASTICIO_API_REQUEST_RETRY_ATTEMPTS, 10),
+      retryDelay: parseInt(env.ELASTICIO_API_REQUEST_RETRY_DELAY, 10),
     });
 
     return [cfg, params];
@@ -108,7 +109,7 @@ function processService(serviceMethod, env) {
   function execService(cfg, params) {
     debug('Init is complete. About to start execution.');
 
-    return compReader.init(COMPONENT_PATH).then(callMethod);
+    return compReader.init(COMPONENT_PATH).then(callMethod); // eslint-disable-line
 
     function callMethod() {
       return ALLOWED_METHODS[serviceMethod](cfg, params);
@@ -141,8 +142,8 @@ function processService(serviceMethod, env) {
       rejectUnauthorized: false,
       body: responseBody,
       simple: false,
-      maxAttempts: parseInt(env.ELASTICIO_API_REQUEST_RETRY_ATTEMPTS),
-      retryDelay: parseInt(env.ELASTICIO_API_REQUEST_RETRY_DELAY),
+      maxAttempts: parseInt(env.ELASTICIO_API_REQUEST_RETRY_ATTEMPTS, 10),
+      retryDelay: parseInt(env.ELASTICIO_API_REQUEST_RETRY_DELAY, 10),
       retryStrategy: request.RetryStrategies.HTTPOrNetworkError,
       fullResponse: true,
     };
@@ -168,14 +169,14 @@ function processService(serviceMethod, env) {
     }
   }
 
-  function verifyCredentials(cfg, params) {
+  function verifyCredentials(cfg) { // , params
     function doVerification(verify) {
       return new Promise((resolve, reject) => {
         function legacyCallback(e, result) {
           if (e) {
             return reject(e);
           }
-          resolve(result);
+          return resolve(result);
         }
         const callScope = new ServiceExec({
           logger: new ComponentLogger(),
@@ -235,6 +236,7 @@ function processService(serviceMethod, env) {
         config: env,
       },
     });
+    // eslint-disable-next-line
     callScope.on('updateKeys', keys => addPromise(apiClient.accounts.update(cfg._account, { keys })));
 
     const finished = Q.defer();
@@ -259,7 +261,7 @@ function processService(serviceMethod, env) {
           if (e) {
             return reject(e);
           }
-          resolve(result);
+          return resolve(result);
         }
         const result = module[method].bind(callScope)(cfg, legacyCallback);
 
@@ -292,3 +294,5 @@ function processService(serviceMethod, env) {
     return finished.promise;
   }
 }
+
+exports.processService = processService;

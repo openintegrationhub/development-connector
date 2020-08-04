@@ -1,3 +1,6 @@
+
+/* eslint no-underscore-dangle: 0 */ // --> OFF
+
 const assert = require('assert');
 const _ = require('lodash');
 const { EventEmitter } = require('./emitter');
@@ -18,7 +21,7 @@ class TaskExec extends EventEmitter {
     assert(this._services.amqp, 'TaskExec should be created with ampq');
   }
 
-  process(triggerOrAction, payload, cfg, snapshot) {
+  process(triggerOrAction, payload, cfg, snapshot) { // eslint-disable-line consistent-return
     const onError = async (err) => {
       this.logger.error(err);
       await this.emit('error', err);
