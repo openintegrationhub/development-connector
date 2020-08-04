@@ -10,10 +10,12 @@ const RestApiClient = require('elasticio-rest-node');
 const assert = require('assert');
 const co = require('co');
 const pThrottle = require('p-throttle');
+const jwt = require('jsonwebtoken');
 
 const request = require('request-promise').defaults({ simple: false });
 
 const AMQP_HEADER_META_PREFIX = 'x-eio-meta-';
+
 
 function convertSettingsToCamelCase(settings) {
     return _.mapKeys(settings, (value, key) => _.camelCase(key));
@@ -59,36 +61,36 @@ class Ferryman {
         return this.amqpConnection.connect(this.settings.AMQP_URI);
     }
 
-    async prepare(skipInit, token) {
-        const {
-            settings: {
-                COMPONENT_PATH: compPath,
-                FLOW_ID: flowId,
-                STEP_ID: stepId
-            },
-            apiClient,
-            componentReader
-        } = this;
-
-        let stepData;
-
-        if (skipInit) {
-            stepData = await this.getSnapShot(flowId, stepId, token);
-            // stepData = await apiClient.tasks.retrieveStep(flowId, stepId);
-        } else {
-            stepData = await apiClient.tasks.retrieveStep(flowId, stepId);
-        }
-
-        log.debug('Received step data: %j', stepData);
-        assert(stepData);
-
-        this.snapshot = stepData.snapshot;
-
-        // this.stepData = Object.assign({}, this.stepData, stepData);
-        this.stepData = Object.assign({}, this.stepData, stepData);
-
-        if (!skipInit) { await componentReader.init(compPath); }
-    }
+    // async prepare(skipInit, token) {
+    //     const {
+    //         settings: {
+    //             COMPONENT_PATH: compPath,
+    //             FLOW_ID: flowId,
+    //             STEP_ID: stepId
+    //         },
+    //         apiClient,
+    //         componentReader
+    //     } = this;
+    //
+    //     let stepData;
+    //
+    //     if (skipInit) {
+    //         stepData = await this.getSnapShot(flowId, stepId, token);
+    //         // stepData = await apiClient.tasks.retrieveStep(flowId, stepId);
+    //     } else {
+    //         stepData = await apiClient.tasks.retrieveStep(flowId, stepId);
+    //     }
+    //
+    //     log.debug('Received step data: %j', stepData);
+    //     assert(stepData);
+    //
+    //     this.snapshot = stepData.snapshot;
+    //
+    //     // this.stepData = Object.assign({}, this.stepData, stepData);
+    //     this.stepData = Object.assign({}, this.stepData, stepData);
+    //
+    //     if (!skipInit) { await componentReader.init(compPath); }
+    // }
 
     async getSnapShot(flowId, stepId, token) {
 
@@ -145,13 +147,13 @@ class Ferryman {
     reportError(err) {
         const headers = Object.assign({}, getAdditionalHeadersFromSettings(this.settings), {
             execId: this.settings.EXEC_ID,
-            taskId: this.settings.FLOW_ID,
+            taskId: this.flowId, // this.settings.FLOW_ID,
             workspaceId: this.settings.WORKSPACE_ID,
             containerId: this.settings.CONTAINER_ID,
-            userId: this.settings.USER_ID,
-            stepId: this.settings.STEP_ID,
+            userId: this.userId, // this.settings.USER_ID,
+            stepId: this.stepId, // this.settings.STEP_ID,
             compId: this.settings.COMP_ID,
-            function: this.settings.FUNCTION
+            function: this.function, // this.settings.FUNCTION
         });
         return this.amqpConnection.sendError(err, headers);
     }
@@ -305,12 +307,33 @@ class Ferryman {
         const self = this;
 
         // Prepare depending on message
-        this.flowId = message.properties.headers.taskId;
-        this.stepId = message.properties.headers.stepId;
+        // this.flowId = message.properties.headers.taskId;
+        // this.stepId = message.properties.headers.stepId;
+        const tokenData = jwt.decode(message.properties.headers.orchestratorToken);
+        this.flowId = tokenData.flowId;
+        this.stepId = tokenData.stepId;
+        this.userId = tokenData.userId;
+        this.function = tokenData.function;
+
+        this.apiKey = tokenData.apiKey;
+        this.apiUsername = tokenData.apiUsername;
+
+        // 'FLOW_ID',
+        // 'EXEC_ID', // deprecated
+        // 'STEP_ID',
+        // 'USER_ID',
+        // 'FUNCTION',
+        // 'API_USERNAME',
+        // 'API_KEY',
+
+        // get snapshot
+        const stepData = await this.getSnapShot(this.flowId, this.stepId, this.apiKey); //token
+        this.snapshot = stepData.snapshot;
+        this.stepData = Object.assign({}, this.stepData, stepData);
 
         // todo: Find a way to do this without overwriting this.stepData
-        console.log(message)
-        await this.prepare(true, message.properties.headers.authToken);
+        // console.log(message)
+        // await this.prepare(true, message.properties.headers.authToken);
 
         const settings = this.settings;
         const incomingMessageHeaders = this.readIncomingMessageHeaders(message);
@@ -335,7 +358,11 @@ class Ferryman {
 
         // Fetch secret if necessary
         let secret = false;
+        // if (incomingMessageHeaders.secret && incomingMessageHeaders.authToken) {
+        //     secret = await this.fetchSecret(incomingMessageHeaders.secret, incomingMessageHeaders.authToken);
+        // }
         if (incomingMessageHeaders.secret && incomingMessageHeaders.authToken) {
+          // @todo: update to new variables
             secret = await this.fetchSecret(incomingMessageHeaders.secret, incomingMessageHeaders.authToken);
         }
 
@@ -348,7 +375,7 @@ class Ferryman {
         }
 
         // TODO: Determine whether setting value can/should be disregarded entirely
-        const action = incomingMessageHeaders.action || settings.FUNCTION;
+        const action = this.function || settings.FUNCTION;
 
         log.debug('Trigger or action: %s', action);
 
@@ -362,13 +389,13 @@ class Ferryman {
             'threadId': incomingMessageHeaders.threadId,
             'messageId': outgoingMessageId,
             'execId': settings.EXEC_ID,
-            'taskId': message.properties.headers.taskId, // settings.FLOW_ID,
+            'taskId': this.flowId, // message.properties.headers.taskId, // settings.FLOW_ID,
             'workspaceId': settings.WORKSPACE_ID,
             'containerId': settings.CONTAINER_ID,
-            'userId': message.properties.headers.userId, // settings.USER_ID,
-            'stepId': message.properties.headers.stepId, // settings.STEP_ID,
+            'userId': this.userId, // message.properties.headers.userId, // settings.USER_ID,
+            'stepId': this.stepId, // message.properties.headers.stepId, // settings.STEP_ID,
             'compId': settings.COMP_ID,
-            'function': action,
+            'function': this.function,
             'start': new Date().getTime(),
             'cid': cipher.id,
             'x-eio-routing-key': routingKey,
