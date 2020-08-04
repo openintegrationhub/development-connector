@@ -25,7 +25,7 @@ function readFrom(envVars) {
     'AMQP_URI',
     'LISTEN_MESSAGES_ON',
     'PUBLISH_MESSAGES_TO',
-    'BACKCHANNEL_EXCHANGE',
+    // 'BACKCHANNEL_EXCHANGE',
 
     'OUTPUT_ROUTING_KEY',
     'ERROR_ROUTING_KEY',
