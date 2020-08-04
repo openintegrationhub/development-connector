@@ -1,5 +1,4 @@
-exports.init = initTrigger;
-exports.process = processTrigger;
+/* eslint no-unused-vars: 0 */ // --> OFF
 
 function initTrigger(cfg) {
   return Promise.resolve({
@@ -14,3 +13,6 @@ function processTrigger(msg, cfg) {
   });
   that.emit('end');
 }
+
+exports.init = initTrigger;
+exports.process = processTrigger;

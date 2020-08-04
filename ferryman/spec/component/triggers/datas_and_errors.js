@@ -1,4 +1,4 @@
-exports.process = processTrigger;
+/* eslint no-unused-vars: 0 */ // --> OFF
 
 function processTrigger(msg, cfg) {
   const that = this;
@@ -10,3 +10,5 @@ function processTrigger(msg, cfg) {
   that.emit('data', { content: 'Data 3' });
   that.emit('end');
 }
+
+exports.process = processTrigger;

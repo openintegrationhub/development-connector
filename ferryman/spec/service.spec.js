@@ -1,3 +1,8 @@
+/* eslint global-require: 0 */ // --> OFF
+/* eslint no-use-before-define: 0 */ // --> OFF
+/* eslint max-len: 0 */ // --> OFF
+/* eslint no-param-reassign: 0 */ // --> OFF
+
 describe('Service', () => {
   const service = require('../lib/service');
   const nock = require('nock');

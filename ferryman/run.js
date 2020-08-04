@@ -1,16 +1,18 @@
-const logger = require('./lib/logging.js');
-const Sailor = require('./lib/sailor.js').Sailor;
-const settings = require('./lib/settings.js');
+/* eslint no-underscore-dangle: 0 */ // --> OFF
+
 const co = require('co');
+const logger = require('./lib/logging.js');
+const { Sailor } = require('./lib/sailor.js');
+const settings = require('./lib/settings.js');
 
 let sailor;
 let disconnectRequired;
 
-async function putOutToSea(settings) {
-  sailor = new Sailor(settings);
+async function putOutToSea(localSettings) {
+  sailor = new Sailor(localSettings);
 
   // eslint-disable-next-line no-extra-boolean-cast
-  if (!!settings.HOOK_SHUTDOWN) {
+  if (!!localSettings.HOOK_SHUTDOWN) {
     disconnectRequired = false;
     // eslint-disable-next-line no-empty-function
     sailor.reportError = () => {
@@ -69,9 +71,9 @@ function gracefulShutdown() {
   sailor.scheduleShutdown().then(disconnectAndExit);
 }
 
-async function run(settings) {
+async function run(localSettings) {
   try {
-    await putOutToSea(settings);
+    await putOutToSea(localSettings);
   } catch (e) {
     if (sailor) {
       await sailor.reportError(e);

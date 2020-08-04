@@ -1,3 +1,5 @@
+/* eslint no-unused-expressions: 0 */ // --> OFF
+
 const chai = require('chai');
 const sinon = require('sinon');
 
@@ -633,10 +635,10 @@ describe('Sailor', () => {
 
       await sailor.prepare();
       await sailor.connect();
-      const payload = {
+      const currentPayload = {
         snapshot: { blabla: 'blablabla' },
       };
-      await sailor.processMessage(payload, message);
+      await sailor.processMessage(currentPayload, message);
       expect(sailor.apiClient.tasks.retrieveStep).to.have.been.calledOnce;
 
       const expectedSnapshot = { blabla: 'blablabla' };
@@ -679,10 +681,10 @@ describe('Sailor', () => {
 
       await sailor.prepare();
       await sailor.connect();
-      const payload = {
+      const currentPayload = {
         updateSnapshot: { updated: 'value' },
       };
-      await sailor.processMessage(payload, message);
+      await sailor.processMessage(currentPayload, message);
       expect(sailor.apiClient.tasks.retrieveStep).to.have.been.calledOnce;
       const expectedSnapshot = { someId: 'someData', updated: 'value' };
       expect(fakeAMQPConnection.connect).to.have.been.calledOnce;

@@ -1,7 +1,9 @@
+/* eslint global-require: 0 */ // --> OFF
+
 describe('Executor', () => {
   const nock = require('nock');
 
-  const TaskExec = require('../lib/executor.js').TaskExec;
+  const { TaskExec } = require('../lib/executor.js');
   const payload = { content: 'MessageContent' };
   const cfg = {};
   const apiClientStub = {};
@@ -127,7 +129,7 @@ describe('Executor', () => {
     runs(() => {
       expect(taskexec.emit).toHaveBeenCalled();
 
-      const calls = taskexec.emit.calls;
+      const { calls } = taskexec.emit;
 
       expect(calls[0].args).toEqual(['data', 'Data 1']);
       expect(calls[1].args).toEqual(['data', { content: 'Data 2' }]);
@@ -412,14 +414,14 @@ describe('Executor', () => {
     });
 
     it('should log extra fields', () => {
-      const testStream = new TestStream();
+      const localTestStream = new TestStream();
 
-      const taskExec = new TaskExec({
+      const localTaskExec = new TaskExec({
         loggerOptions: {
           streams: [
             {
               type: 'raw',
-              stream: testStream,
+              stream: localTestStream,
             },
           ],
 
@@ -430,13 +432,13 @@ describe('Executor', () => {
         services: defaultTaskExecArgs.services,
       });
 
-      taskExec.logger.info('info');
+      localTaskExec.logger.info('info');
 
-      expect(testStream.lastRecord.name).toEqual('component');
-      expect(testStream.lastRecord.threadId).toEqual('threadId');
-      expect(testStream.lastRecord.messageId).toEqual('messageId');
-      expect(testStream.lastRecord.parentMessageId).toEqual('parentMessageId');
-      expect(testStream.lastRecord.msg).toEqual('info');
+      expect(localTestStream.lastRecord.name).toEqual('component');
+      expect(localTestStream.lastRecord.threadId).toEqual('threadId');
+      expect(localTestStream.lastRecord.messageId).toEqual('messageId');
+      expect(localTestStream.lastRecord.parentMessageId).toEqual('parentMessageId');
+      expect(localTestStream.lastRecord.msg).toEqual('info');
     });
   });
 });

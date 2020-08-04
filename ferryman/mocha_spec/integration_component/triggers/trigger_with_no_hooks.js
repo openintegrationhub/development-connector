@@ -1,8 +1,5 @@
-
-
+/* eslint no-unused-vars: 0 */ // --> OFF
 const rp = require('request-promise-native');
-
-exports.process = processTrigger;
 
 function processTrigger(msg, cfg) {
   // eslint-disable-next-line no-invalid-this
@@ -23,3 +20,5 @@ function processTrigger(msg, cfg) {
     that.emit('end');
   });
 }
+
+exports.process = processTrigger;

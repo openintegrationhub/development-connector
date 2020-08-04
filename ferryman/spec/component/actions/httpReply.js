@@ -1,4 +1,4 @@
-exports.process = processAction;
+/* eslint no-unused-vars: 0 */ // --> OFF
 
 async function processAction(msg, cfg) {
   await this.emit('httpReply', {
@@ -14,3 +14,5 @@ async function processAction(msg, cfg) {
   });
   await this.emit('end');
 }
+
+exports.process = processAction;

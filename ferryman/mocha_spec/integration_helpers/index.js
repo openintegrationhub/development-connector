@@ -1,4 +1,9 @@
+/* eslint import/no-extraneous-dependencies: 0 */ // --> OFF
+/* eslint no-underscore-dangle: 0 */ // --> OFF
+/* eslint max-len: 0 */ // --> OFF
+/* eslint class-methods-use-this: 0 */ // --> OFF
 
+/* eslint no-shadow: 0 */ // --> OFF
 
 const co = require('co');
 const amqplib = require('amqplib');
@@ -12,7 +17,7 @@ const encryptor = require('../../lib/encryptor');
 
 const FAKE_API_PORT = 1244; // most likely the port won't be taken – https://www.adminsub.net/tcp-udp-port-finder/1244
 
-const env = process.env;
+const { env } = process;
 
 // @todo move AmqpHelper to dedicated file (will be done in the future refactoring)
 class AmqpHelper extends EventEmitter {
@@ -440,14 +445,14 @@ class AmqpHelperGlobal extends EventEmitter {
   }
 }
 
-function amqp() {
-  const handle = {
-    // eslint-disable-next-line no-empty-function
-    getMessages() {
-    },
-  };
-  return handle;
-}
+// function amqp() {
+//   const handle = {
+//     // eslint-disable-next-line no-empty-function
+//     getMessages() {
+//     },
+//   };
+//   return handle;
+// }
 
 function prepareEnv() {
   env.ELASTICIO_AMQP_URI = 'amqp://guest:guest@localhost:5672';

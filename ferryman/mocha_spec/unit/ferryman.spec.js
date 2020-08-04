@@ -1,3 +1,6 @@
+/* eslint no-unused-expressions: 0 */ // --> OFF
+/* eslint max-len: 0 */ // --> OFF
+
 const chai = require('chai');
 const sinon = require('sinon');
 
@@ -14,7 +17,7 @@ const amqp = require('../../lib/amqp.js');
 const encryptor = require('../../lib/encryptor.js');
 
 const flowId = '5559edd38968ec0736000003';
-const stepId = 'step_1';
+// const stepId = 'step_1';
 
 
 describe('Ferryman', () => {
@@ -59,6 +62,8 @@ describe('Ferryman', () => {
     envVars.ELASTICIO_SNAPSHOTS_SERVICE_BASE_URL = 'https://localhost:2345';
 
     settings = Settings.readFrom(envVars);
+
+    const stepId = 'step_1';
 
     nock(`https://localhost:2345/snapshots/flows/${flowId}/steps`)
       .get(`/${stepId}`)
@@ -668,10 +673,10 @@ describe('Ferryman', () => {
 
       await ferryman.prepare();
       await ferryman.connect();
-      const payload = {
+      const currentPayload = {
         snapshot: { blabla: 'blablabla' },
       };
-      await ferryman.processMessage(payload, message);
+      await ferryman.processMessage(currentPayload, message);
       expect(ferryman.apiClient.tasks.retrieveStep).to.have.callCount(1);
 
       const expectedSnapshot = { blabla: 'blablabla' };
@@ -716,10 +721,10 @@ describe('Ferryman', () => {
 
       await ferryman.prepare();
       await ferryman.connect();
-      const payload = {
+      const currentPayload = {
         updateSnapshot: { value: 'new value' },
       };
-      await ferryman.processMessage(payload, message);
+      await ferryman.processMessage(currentPayload, message);
       expect(ferryman.apiClient.tasks.retrieveStep).to.have.callCount(1);
       const expectedSnapshot = { id: '123456789', value: 'new value' };
       expect(fakeAMQPConnection.connect).to.have.been.calledOnce;

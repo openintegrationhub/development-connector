@@ -1,9 +1,8 @@
-
+/* eslint no-unused-vars: 0 */ // --> OFF
 
 const Q = require('q');
 const request = require('request');
 
-exports.process = processTrigger;
 
 function processTrigger(msg, cfg) {
   const options = {
@@ -17,3 +16,5 @@ function processTrigger(msg, cfg) {
       body: data,
     }));
 }
+
+exports.process = processTrigger;

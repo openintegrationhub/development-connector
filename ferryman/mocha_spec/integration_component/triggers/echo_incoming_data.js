@@ -1,4 +1,4 @@
-exports.process = handleMessage;
+/* eslint no-unused-vars: 0 */ // --> OFF
 
 function handleMessage(msg, cfg, snapshot) {
   console.log('echo_incoming_data');
@@ -16,3 +16,5 @@ function handleMessage(msg, cfg, snapshot) {
   });
   this.emit('end');
 }
+
+exports.process = handleMessage;

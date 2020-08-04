@@ -1,4 +1,4 @@
-exports.process = handleMessage;
+/* eslint no-unused-vars: 0 */ // --> OFF
 
 async function handleMessage(msg, cfg, snapshot) {
   await new Promise(resolve => setTimeout(resolve, 2000));
@@ -17,3 +17,5 @@ async function handleMessage(msg, cfg, snapshot) {
   });
   this.emit('end');
 }
+
+exports.process = handleMessage;

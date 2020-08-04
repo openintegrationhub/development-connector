@@ -1,6 +1,6 @@
-describe('Settings', () => {
-  const settings = require('../lib/settings.js');
+const settings = require('../lib/settings.js');
 
+describe('Settings', () => {
   it('should throw error if no important settings provided', () => {
     expect(() => {
       settings.readFrom({});

@@ -1,6 +1,4 @@
-
-
-exports.process = process;
+/* eslint no-unused-vars: 0 */ // --> OFF
 
 function process(msg, cfg, snapshot) {
   // eslint-disable-next-line no-invalid-this
@@ -17,3 +15,5 @@ function process(msg, cfg, snapshot) {
   // eslint-disable-next-line no-invalid-this
   this.emit('end');
 }
+
+exports.process = process;

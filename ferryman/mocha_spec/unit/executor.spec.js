@@ -1,10 +1,15 @@
+
+/* eslint no-unused-expressions: 0 */ // --> OFF
+/* eslint no-underscore-dangle: 0 */ // --> OFF
+/* eslint max-len: 0 */ // --> OFF
+
 const chai = require('chai');
 
 const { expect } = chai;
 const sinon = require('sinon');
 chai.use(require('sinon-chai'));
 
-const TaskExec = require('../../lib/executor.js').TaskExec;
+const { TaskExec } = require('../../lib/executor.js');
 
 describe('Executor', () => {
   const apiClientStub = {};

@@ -1,3 +1,6 @@
+
+/* eslint global-require: 0 */ // --> OFF
+
 describe('Cipher', () => {
   process.env.ELASTICIO_MESSAGE_CRYPTO_PASSWORD = 'testCryptoPassword';
   process.env.ELASTICIO_MESSAGE_CRYPTO_IV = 'iv=any16_symbols';

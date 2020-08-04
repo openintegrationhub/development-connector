@@ -1,8 +1,9 @@
+/* eslint no-unused-vars: 0 */ // --> OFF
+
 const co = require('co');
 const Q = require('q');
 const request = require('request');
 
-exports.process = processTrigger;
 
 function processTrigger(msg, cfg) {
   return co(function* gen() {
@@ -33,3 +34,5 @@ function processTrigger(msg, cfg) {
     };
   }.bind(this));
 }
+
+exports.process = processTrigger;

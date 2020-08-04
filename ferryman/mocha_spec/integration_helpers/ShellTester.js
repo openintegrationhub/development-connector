@@ -1,3 +1,7 @@
+
+/* eslint no-underscore-dangle: 0 */ // --> OFF
+/* eslint max-len: 0 */ // --> OFF
+
 const EventEmitter = require('events');
 const cp = require('child_process');
 

@@ -1,10 +1,7 @@
-
+/* eslint no-unused-vars: 0 */ // --> OFF
 
 const rp = require('request-promise-native');
 
-exports.init = initTrigger;
-exports.startup = startup;
-exports.process = processTrigger;
 
 const subscription = {};
 
@@ -70,3 +67,7 @@ function processTrigger(msg, cfg) {
     that.emit('end');
   });
 }
+
+exports.init = initTrigger;
+exports.startup = startup;
+exports.process = processTrigger;

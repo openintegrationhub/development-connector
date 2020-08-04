@@ -1,13 +1,8 @@
+
+/* eslint no-unused-vars: 0 */ // --> OFF
+
 const Q = require('q');
 const request = require('request');
-
-exports.process = processAction;
-exports.getMetaModel = getMetaModel;
-exports.getModel = getModel;
-exports.getModelWithKeysUpdate = getModelWithKeysUpdate;
-exports.promiseSelectModel = promiseSelectModel;
-exports.promiseRequestSelectModel = promiseRequestSelectModel;
-exports.promiseSelectModelRejected = promiseSelectModelRejected;
 
 function processAction(msg, cfg, snapshot) {
   if (msg.snapshot) {
@@ -69,3 +64,11 @@ function promiseRequestSelectModel(cfg) {
 function promiseSelectModelRejected(cfg) {
   return Promise.reject(new Error('Ouch. This promise is rejected'));
 }
+
+exports.process = processAction;
+exports.getMetaModel = getMetaModel;
+exports.getModel = getModel;
+exports.getModelWithKeysUpdate = getModelWithKeysUpdate;
+exports.promiseSelectModel = promiseSelectModel;
+exports.promiseRequestSelectModel = promiseRequestSelectModel;
+exports.promiseSelectModelRejected = promiseSelectModelRejected;

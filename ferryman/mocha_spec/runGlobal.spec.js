@@ -1,7 +1,19 @@
+/* eslint no-unused-expressions: 0 */ // --> OFF
+/* eslint no-underscore-dangle: 0 */ // --> OFF
+/* eslint max-len: 0 */ // --> OFF
+/* eslint no-await-in-loop: 0 */ // --> OFF
+
+/* eslint global-require: 0 */ // --> OFF
+/* eslint import/no-dynamic-require: 0 */ // --> OFF
+
+/* eslint no-restricted-syntax: 0 */ // --> OFF
+/* eslint no-loop-func: 0 */ // --> OFF
+
+/* eslint no-shadow: 0 */ // --> OFF
 
 
 const nock = require('nock');
-const expect = require('chai').expect;
+const { expect } = require('chai');
 const uuid = require('uuid');
 const sinonjs = require('sinon');
 const logging = require('../lib/logging.js');
@@ -9,7 +21,7 @@ const helpers = require('./integration_helpers');
 const encryptor = require('../lib/encryptor');
 const settings = require('../lib/settings');
 
-const env = process.env;
+const { env } = process;
 function requireRun() {
   // @todo it would be great to use something like this https://github.com/jveski/shelltest
   const path = '../runGlobal.js';
@@ -67,7 +79,7 @@ describe('Integration Test for globalRun', () => {
   describe('when ferryman is being invoked for message processing', () => {
     let parentMessageId;
     let threadId;
-    let messageId;
+    let messageId; // eslint-disable-line no-unused-vars
 
     const amqpHelper = helpers.amqpGlobal();
     beforeEach(async () => {

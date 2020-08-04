@@ -1,9 +1,8 @@
-
-
-exports.process = process;
+/* eslint no-unused-vars: 0 */ // --> OFF
+/* eslint no-await-in-loop: 0 */ // --> OFF
 
 async function process(msg, cfg, snapshot) {
-  for (let i = 0; i < 11; i++) {
+  for (let i = 0; i < 11; i += 1) {
     console.log('Sending message %s', i);
     // eslint-disable-next-line no-invalid-this
     await this.emit('data', {
@@ -21,3 +20,5 @@ async function process(msg, cfg, snapshot) {
   // eslint-disable-next-line no-invalid-this
   this.emit('end');
 }
+
+exports.process = process;

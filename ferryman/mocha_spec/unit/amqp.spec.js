@@ -1,3 +1,9 @@
+
+/* eslint no-unused-expressions: 0 */ // --> OFF
+/* eslint no-underscore-dangle: 0 */ // --> OFF
+/* eslint max-len: 0 */ // --> OFF
+/* eslint no-await-in-loop: 0 */ // --> OFF
+
 const chai = require('chai');
 const sinon = require('sinon');
 
@@ -10,7 +16,7 @@ const pThrottle = require('p-throttle');
 
 const Settings = require('../../lib/settings');
 const encryptor = require('../../lib/encryptor.js');
-const Amqp = require('../../lib/amqp.js').Amqp;
+const { Amqp } = require('../../lib/amqp.js');
 
 describe('AMQP', () => {
   process.env.ELASTICIO_MESSAGE_CRYPTO_PASSWORD = 'testCryptoPassword';
@@ -270,7 +276,7 @@ describe('AMQP', () => {
     const throttle = pThrottle(() => Promise.resolve(), 1, 500);
     const start = Date.now();
 
-    for (let i = 0; i < 3; i++) {
+    for (let i = 0; i < 3; i += 1) {
       await amqp.sendData(
         {
           headers: {
@@ -331,7 +337,7 @@ describe('AMQP', () => {
     expect(amqp.publishChannel.publish).not.to.have.been.called;
   });
 
-  it('Should send message to outgoing channel after ${settings.AMQP_PUBLISH_RETRY_ATTEMPTS} attempts', async () => {
+  it(`Should send message to outgoing channel after ${settings.AMQP_PUBLISH_RETRY_ATTEMPTS} attempts`, async () => {
     const retryCount = settings.AMQP_PUBLISH_RETRY_ATTEMPTS;
     const amqp = new Amqp(settings);
     let iteration = 0;
@@ -339,7 +345,7 @@ describe('AMQP', () => {
       on: sandbox.stub(),
       publish: sandbox.stub().callsFake((exchangeName, routingKey, payloadBuffer, options, cb) => {
         iteration < retryCount - 1 ? cb('Some error') : cb(null, 'Success');
-        iteration++;
+        iteration += 1;
         return true;
       }),
     };
@@ -386,7 +392,7 @@ describe('AMQP', () => {
     );
   });
 
-  it('Should throw error after ${settings.AMQP_PUBLISH_RETRY_ATTEMPTS} attempts to publish message',
+  it(`Should throw error after ${settings.AMQP_PUBLISH_RETRY_ATTEMPTS} attempts to publish message`,
     async function test() {
             this.timeout(20000); // eslint-disable-line
       const retryCount = envVars.ELASTICIO_AMQP_PUBLISH_RETRY_ATTEMPTS;
@@ -985,7 +991,7 @@ describe('AMQP', () => {
   });
 
   it('Should listen queue and pass decrypted message to client function with protocol version 1', async () => {
-    const message = {
+    const newMessage = {
       fields: {
         consumerTag: 'abcde',
         deliveryTag: 12345,
@@ -1028,13 +1034,13 @@ describe('AMQP', () => {
       reject: sandbox.stub(),
     };
     amqp.subscribeChannel.consume.callsFake((queueName, callback) => {
-      callback(message);
+      callback(newMessage);
       return {
-        consumerTag: message.fields.consumerTag,
+        consumerTag: newMessage.fields.consumerTag,
       };
     });
-    amqp.subscribeChannel.reject.callsFake((message) => {
-      rejectedMessage = message;
+    amqp.subscribeChannel.reject.callsFake((currentMessage) => {
+      rejectedMessage = currentMessage;
     });
 
     await amqp.listenQueue('testQueue', clientFunction);

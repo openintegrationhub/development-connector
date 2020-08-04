@@ -1,7 +1,9 @@
-const expect = require('chai').expect;
+const { expect } = require('chai');
 const helpers = require('./integration_helpers');
 
-const env = process.env;
+const { env } = process;
+
+let fakeApiServer; // eslint-disable-line no-unused-vars
 
 describe('Graceful shutdown', function test() {
   this.timeout(helpers.ShellTester.TIMEOUT_DEFAULT * 1.1);
@@ -15,7 +17,7 @@ describe('Graceful shutdown', function test() {
     },
   };
 
-  let fakeApiServer;
+  // let fakeApiServer;
   const amqpHelper = helpers.amqp();
 
   beforeEach(async () => {
@@ -45,7 +47,8 @@ describe('Graceful shutdown', function test() {
 
       await sailorTester.sendKill();
 
-      // if sailor won't shutdown shortly, this promise will be rejected since sailorTester.timeout is 1000ms
+      // if sailor won't shutdown shortly,
+      // this promise will be rejected since sailorTester.timeout is 1000ms
       await sailorTester.getPromise();
     });
   });
@@ -71,7 +74,8 @@ describe('Graceful shutdown', function test() {
       // let amqp to take the messages
       await new Promise(resolve => setTimeout(resolve, 500));
 
-      // if sailor won't shutdown shortly, this promise will be rejected since sailorTester.timeout is 1000ms
+      // if sailor won't shutdown shortly,
+      // this promise will be rejected since sailorTester.timeout is 1000ms
       await sailorTester.getPromise();
 
       // make sure, that the message won't be consubed by the sailor

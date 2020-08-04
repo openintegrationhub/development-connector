@@ -1,4 +1,16 @@
 
+/* eslint no-unused-expressions: 0 */ // --> OFF
+/* eslint no-underscore-dangle: 0 */ // --> OFF
+/* eslint max-len: 0 */ // --> OFF
+/* eslint no-await-in-loop: 0 */ // --> OFF
+
+/* eslint global-require: 0 */ // --> OFF
+/* eslint import/no-dynamic-require: 0 */ // --> OFF
+
+/* eslint no-restricted-syntax: 0 */ // --> OFF
+/* eslint no-loop-func: 0 */ // --> OFF
+
+/* eslint no-shadow: 0 */ // --> OFF
 
 const nock = require('nock');
 const { expect } = require('chai');

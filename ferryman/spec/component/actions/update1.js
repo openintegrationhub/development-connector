@@ -1,7 +1,8 @@
+/* eslint no-unused-vars: 0 */ // --> OFF
+
 const Q = require('q');
 const request = require('request');
 
-exports.getMetaModel = getMetaModel;
 
 function getMetaModel(cfg) {
   return Promise.resolve({
@@ -16,3 +17,5 @@ function getMetaModel(cfg) {
     },
   });
 }
+
+exports.getMetaModel = getMetaModel;

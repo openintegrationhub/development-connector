@@ -1,6 +1,6 @@
-describe('Component reader', () => {
-  const ComponentReader = require('../lib/component_reader.js').ComponentReader;
+const { ComponentReader } = require('../lib/component_reader.js');
 
+describe('Component reader', () => {
   it('Should find component located on the path', () => {
     const reader = new ComponentReader();
     const promise = reader.init('/spec/component/');
