@@ -285,7 +285,7 @@ class Ferryman {
         const metaHeadersLowerCased = _.mapKeys(metaHeaders, (value, key) => key.toLowerCase());
 
         const result = {
-            stepId: headers.stepId, // the only use is passthrough mechanism
+            stepId: this.stepId, // headers.stepId, // the only use is passthrough mechanism
             ...metaHeadersLowerCased,
             threadId: headers.threadId || metaHeadersLowerCased['x-eio-meta-trace-id'],
             messageId: headers.messageId,
@@ -449,7 +449,7 @@ class Ferryman {
 
                 if (stepData.is_passthrough === true) {
                     if (settings.NO_SELF_PASSTRHOUGH) {
-                        const { stepId } = incomingMessageHeaders;
+                        const { stepId } = this.stepId, //incomingMessageHeaders;
                         if (stepId) {
                             data.passthrough = Object.assign({}, origPassthrough, {
                                 [stepId]: Object.assign({}, _.omit(payload, 'passthrough'))
