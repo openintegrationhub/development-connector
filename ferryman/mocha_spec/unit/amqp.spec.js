@@ -112,7 +112,7 @@ describe('AMQP', () => {
       messageId,
     };
 
-    await amqp.sendData({
+    await amqp.sendBackChannel({
       headers: {
         'some-other-header': 'headerValue',
         messageId,
@@ -121,8 +121,8 @@ describe('AMQP', () => {
     }, headers);
 
     expect(amqp.publishChannel.publish).to.have.been.calledOnce.and.calledWith(
-      settings.PUBLISH_MESSAGES_TO,
-      settings.DATA_ROUTING_KEY,
+      settings.BACKCHANNEL_EXCHANGE,
+      settings.OUTPUT_ROUTING_KEY,
       sinon.match((buf) => {
         const payload = encryptor.decryptMessageContent(buf, 'base64');
         expect(payload).to.deep.equal({
@@ -166,15 +166,15 @@ describe('AMQP', () => {
       messageId,
     };
 
-    await amqp.sendData({
+    await amqp.sendBackChannel({
       headers: {
         'some-other-header': 'headerValue',
       },
       body: 'Message content',
     }, headers);
     expect(amqp.publishChannel.publish).to.have.been.calledOnce.and.calledWith(
-      settings.PUBLISH_MESSAGES_TO,
-      settings.DATA_ROUTING_KEY,
+      settings.BACKCHANNEL_EXCHANGE,
+      settings.OUTPUT_ROUTING_KEY,
       sinon.match((buf) => {
         const payload = encryptor.decryptMessageContent(buf, 'base64');
         return sinon.match({
@@ -216,7 +216,7 @@ describe('AMQP', () => {
       messageId,
     };
 
-    const result = await amqp.sendData({
+    const result = await amqp.sendBackChannel({
       headers: {
         'some-other-header': 'headerValue',
         protocolVersion: 2,
@@ -229,8 +229,8 @@ describe('AMQP', () => {
 
     expect(amqp.publishChannel.publish).to.have.been.calledOnce
       .and.calledWith(
-        settings.PUBLISH_MESSAGES_TO,
-        settings.DATA_ROUTING_KEY,
+        settings.BACKCHANNEL_EXCHANGE,
+        settings.OUTPUT_ROUTING_KEY,
         sinon.match((arg) => {
           const payload = encryptor.decryptMessageContent(arg, 'base64');
           return sinon.match({
@@ -277,7 +277,7 @@ describe('AMQP', () => {
     const start = Date.now();
 
     for (let i = 0; i < 3; i += 1) {
-      await amqp.sendData(
+      await amqp.sendBackChannel(
         {
           headers: {
             'some-other-header': 'headerValue',
@@ -296,8 +296,8 @@ describe('AMQP', () => {
     expect(duration).to.equal(1);
     expect(amqp.publishChannel.publish).to.have.been.callCount(3);
     expect(amqp.publishChannel.publish).to.have.been.calledWith(
-      settings.PUBLISH_MESSAGES_TO,
-      settings.DATA_ROUTING_KEY,
+      settings.BACKCHANNEL_EXCHANGE,
+      settings.OUTPUT_ROUTING_KEY,
       sinon.match((arg) => {
         const payload = encryptor.decryptMessageContent(arg, 'base64');
         return sinon.match({
@@ -328,7 +328,7 @@ describe('AMQP', () => {
     const headers = {};
     let caughtError;
     try {
-      await amqp.sendData({ body }, headers);
+      await amqp.sendBackChannel({ body }, headers);
     } catch (e) {
       caughtError = e;
     }
@@ -357,7 +357,7 @@ describe('AMQP', () => {
       messageId,
     };
 
-    await amqp.sendData({
+    await amqp.sendBackChannel({
       headers: {
         'some-other-header': 'headerValue',
       },
@@ -365,8 +365,8 @@ describe('AMQP', () => {
     }, headers);
     expect(amqp.publishChannel.publish).to.have.been.callCount(retryCount);
     expect(amqp.publishChannel.publish).to.have.been.calledWith(
-      settings.PUBLISH_MESSAGES_TO,
-      settings.DATA_ROUTING_KEY,
+      settings.BACKCHANNEL_EXCHANGE,
+      settings.OUTPUT_ROUTING_KEY,
       sinon.match((arg) => {
         const payload = encryptor.decryptMessageContent(arg, 'base64');
         return sinon.match({
@@ -412,7 +412,7 @@ describe('AMQP', () => {
       };
       let caughtError;
       try {
-        await amqp.sendData({
+        await amqp.sendBackChannel({
           headers: {
             'some-other-header': 'headerValue',
           },
@@ -425,8 +425,8 @@ describe('AMQP', () => {
       expect(amqp._getDelay).to.have.been.callCount(retryCount);
       expect(amqp._sleep).to.have.been.callCount(10);
       expect(amqp.publishChannel.publish).to.have.been.callCount(retryCount).and.calledWith(
-        settings.PUBLISH_MESSAGES_TO,
-        settings.DATA_ROUTING_KEY,
+        settings.BACKCHANNEL_EXCHANGE,
+        settings.OUTPUT_ROUTING_KEY,
         sinon.match((arg) => {
           const payload = encryptor.decryptMessageContent(arg, 'base64');
           return sinon.match({
@@ -478,7 +478,7 @@ describe('AMQP', () => {
     };
     await amqp.sendHttpReply(msg, headers);
     expect(amqp.publishChannel.publish).to.have.been.calledOnce.and.calledWith(
-      settings.PUBLISH_MESSAGES_TO,
+      settings.BACKCHANNEL_EXCHANGE,
       'my-special-routing-key',
       sinon.match(arg => arg.toString('hex') === encryptor.encryptMessageContent(msg, 'base64').toString('hex')),
       {
@@ -556,9 +556,9 @@ describe('AMQP', () => {
       messageId,
     };
 
-    await amqp.sendData(msg, headers);
+    await amqp.sendBackChannel(msg, headers);
     expect(amqp.publishChannel.publish).to.have.been.calledOnce.and.calledWith(
-      settings.PUBLISH_MESSAGES_TO,
+      settings.BACKCHANNEL_EXCHANGE,
       'my-special-routing-key',
       sinon.match((arg) => {
         const payload = encryptor.decryptMessageContent(arg, 'base64');
@@ -603,7 +603,7 @@ describe('AMQP', () => {
 
     await amqp.sendError(new Error('Test error'), headers, message);
     expect(amqp.publishChannel.publish).to.have.been.calledOnce.and.calledWith(
-      settings.PUBLISH_MESSAGES_TO,
+      settings.BACKCHANNEL_EXCHANGE,
       settings.ERROR_ROUTING_KEY,
       sinon.match((arg) => {
         const payload = JSON.parse(arg.toString());
@@ -635,82 +635,82 @@ describe('AMQP', () => {
     );
   });
 
-  it('Should send message to errors using routing key from headers when process error', async () => {
-    const expectedErrorPayload = {
-      error: {
-        name: 'Error',
-        message: 'Test error',
-        stack: sinon.match.string,
-      },
-      errorInput: {
-        content: 'Message content',
-      },
-    };
-
-    const amqp = new Amqp(settings);
-    amqp.publishChannel = {
-      on: sandbox.stub(),
-      publish: sandbox.stub().callsFake((exchangeName, routingKey, payloadBuffer, options, cb) => {
-        cb(null, 'Success');
-        return true;
-      }),
-    };
-    const messageId = uuid.v4();
-    const headers = {
-      taskId: 'task1234567890',
-      stepId: 'step_456',
-      reply_to: 'my-special-routing-key',
-      protocolVersion: 1,
-      messageId,
-    };
-
-    await amqp.sendError(new Error('Test error'), headers, message);
-    expect(amqp.publishChannel.publish).to.have.been.calledTwice
-      .and.calledWith(
-        settings.PUBLISH_MESSAGES_TO,
-        '5559edd38968ec0736000003:step_1:1432205514864:error',
-        sinon.match((arg) => {
-          const payload = JSON.parse(arg.toString());
-          payload.error = encryptor.decryptMessageContent(payload.error, 'base64');
-          payload.errorInput = encryptor.decryptMessageContent(payload.errorInput, 'base64');
-
-          return sinon.match(expectedErrorPayload).test(payload);
-        }),
-        {
-          contentType: 'application/json',
-          contentEncoding: 'utf8',
-          mandatory: true,
-          headers: {
-            messageId,
-            taskId: 'task1234567890',
-            stepId: 'step_456',
-            reply_to: 'my-special-routing-key',
-            protocolVersion: 1,
-          },
-        },
-      )
-      .and.calledWith(
-        settings.PUBLISH_MESSAGES_TO,
-        'my-special-routing-key',
-        sinon.match((arg) => {
-          const payload = encryptor.decryptMessageContent(arg.toString(), 'base64');
-          return sinon.match(expectedErrorPayload.error).test(payload);
-        }),
-        {
-          contentType: 'application/json',
-          contentEncoding: 'utf8',
-          mandatory: true,
-          headers: {
-            messageId,
-            taskId: 'task1234567890',
-            stepId: 'step_456',
-            reply_to: 'my-special-routing-key',
-            'x-eio-error-response': true,
-            protocolVersion: 1,
-          },
-        },
-      );
-  });
+  // it('Should send message to errors using routing key from headers when process error', async () => {
+  //   const expectedErrorPayload = {
+  //     error: {
+  //       name: 'Error',
+  //       message: 'Test error',
+  //       stack: sinon.match.string,
+  //     },
+  //     errorInput: {
+  //       content: 'Message content',
+  //     },
+  //   };
+  //
+  //   const amqp = new Amqp(settings);
+  //   amqp.publishChannel = {
+  //     on: sandbox.stub(),
+  //     publish: sandbox.stub().callsFake((exchangeName, routingKey, payloadBuffer, options, cb) => {
+  //       cb(null, 'Success');
+  //       return true;
+  //     }),
+  //   };
+  //   const messageId = uuid.v4();
+  //   const headers = {
+  //     taskId: 'task1234567890',
+  //     stepId: 'step_456',
+  //     reply_to: 'my-special-routing-key',
+  //     protocolVersion: 1,
+  //     messageId,
+  //   };
+  //
+  //   await amqp.sendError(new Error('Test error'), headers, message);
+  //   expect(amqp.publishChannel.publish).to.have.been.calledTwice
+  //     .and.calledWith(
+  //       settings.BACKCHANNEL_EXCHANGE,
+  //       '5559edd38968ec0736000003:step_1:1432205514864:error',
+  //       sinon.match((arg) => {
+  //         const payload = JSON.parse(arg.toString());
+  //         payload.error = encryptor.decryptMessageContent(payload.error, 'base64');
+  //         payload.errorInput = encryptor.decryptMessageContent(payload.errorInput, 'base64');
+  //
+  //         return sinon.match(expectedErrorPayload).test(payload);
+  //       }),
+  //       {
+  //         contentType: 'application/json',
+  //         contentEncoding: 'utf8',
+  //         mandatory: true,
+  //         headers: {
+  //           messageId,
+  //           taskId: 'task1234567890',
+  //           stepId: 'step_456',
+  //           reply_to: 'my-special-routing-key',
+  //           protocolVersion: 1,
+  //         },
+  //       },
+  //     )
+  //     .and.calledWith(
+  //       settings.BACKCHANNEL_EXCHANGE,
+  //       'my-special-routing-key',
+  //       sinon.match((arg) => {
+  //         const payload = encryptor.decryptMessageContent(arg.toString(), 'base64');
+  //         return sinon.match(expectedErrorPayload.error).test(payload);
+  //       }),
+  //       {
+  //         contentType: 'application/json',
+  //         contentEncoding: 'utf8',
+  //         mandatory: true,
+  //         headers: {
+  //           messageId,
+  //           taskId: 'task1234567890',
+  //           stepId: 'step_456',
+  //           reply_to: 'my-special-routing-key',
+  //           'x-eio-error-response': true,
+  //           protocolVersion: 1,
+  //         },
+  //       },
+  //     );
+  // });
 
   it('Should not provide errorInput if errorInput was empty', async () => {
     const amqp = new Amqp(settings);
@@ -731,7 +731,7 @@ describe('AMQP', () => {
 
     await amqp.sendError(new Error('Test error'), headers, {});
     expect(amqp.publishChannel.publish).to.have.been.calledOnce.and.calledWith(
-      settings.PUBLISH_MESSAGES_TO,
+      settings.BACKCHANNEL_EXCHANGE,
       '5559edd38968ec0736000003:step_1:1432205514864:error',
       sinon.match((arg) => {
         const payload = JSON.parse(arg.toString());
@@ -779,7 +779,7 @@ describe('AMQP', () => {
 
     await amqp.sendError(new Error('Test error'), headers, null);
     expect(amqp.publishChannel.publish).to.have.been.calledOnce.and.calledWith(
-      settings.PUBLISH_MESSAGES_TO,
+      settings.BACKCHANNEL_EXCHANGE,
       '5559edd38968ec0736000003:step_1:1432205514864:error',
       sinon.match((arg) => {
         const payload = JSON.parse(arg.toString());
@@ -831,7 +831,7 @@ describe('AMQP', () => {
 
     await amqp.sendRebound(new Error('Rebound error'), message, headers);
     expect(amqp.publishChannel.publish).to.have.been.calledOnce.and.calledWith(
-      settings.PUBLISH_MESSAGES_TO,
+      settings.BACKCHANNEL_EXCHANGE,
       settings.REBOUND_ROUTING_KEY,
       sinon.match((arg) => {
         const payload = encryptor.decryptMessageContent(arg);
@@ -885,7 +885,7 @@ describe('AMQP', () => {
 
     await amqp.sendRebound(new Error('Rebound error'), clonedMessage, headers);
     expect(amqp.publishChannel.publish).to.have.been.calledOnce.and.calledWith(
-      settings.PUBLISH_MESSAGES_TO,
+      settings.BACKCHANNEL_EXCHANGE,
       settings.REBOUND_ROUTING_KEY,
       sinon.match((arg) => {
         const payload = encryptor.decryptMessageContent(arg);
@@ -939,7 +939,7 @@ describe('AMQP', () => {
 
     await amqp.sendRebound(new Error('Rebound error'), clonedMessage, headers);
     expect(amqp.publishChannel.publish).to.have.been.calledOnce.and.calledWith(
-      settings.PUBLISH_MESSAGES_TO,
+      settings.BACKCHANNEL_EXCHANGE,
       settings.ERROR_ROUTING_KEY,
       sinon.match((arg) => {
         const payload = JSON.parse(arg.toString());
@@ -989,81 +989,81 @@ describe('AMQP', () => {
 
     expect(amqp.subscribeChannel.reject).to.have.been.calledOnce.and.calledWith(message, false);
   });
-
-  it('Should listen queue and pass decrypted message to client function with protocol version 1', async () => {
-    const newMessage = {
-      fields: {
-        consumerTag: 'abcde',
-        deliveryTag: 12345,
-        exchange: 'test',
-        routingKey: 'test.hello',
-      },
-      properties: {
-        contentType: 'application/json',
-        contentEncoding: 'utf8',
-        headers: {
-          taskId: 'task1234567890',
-          execId: 'exec1234567890',
-          reply_to: 'replyTo1234567890',
-        },
-        deliveryMode: undefined,
-        priority: undefined,
-        correlationId: undefined,
-        replyTo: undefined,
-        expiration: undefined,
-        messageId: undefined,
-        timestamp: undefined,
-        type: undefined,
-        userId: undefined,
-        appId: undefined,
-        mandatory: true,
-        clusterId: '',
-      },
-      content: encryptor.encryptMessageContent(
-        { content: 'Message content' },
-        'base64',
-      ),
-    };
-
-    const amqp = new Amqp(settings);
-    let rejectedMessage;
-    const clientFunction = sandbox.stub();
-    amqp.subscribeChannel = {
-      consume: sandbox.stub(),
-      prefetch: sandbox.stub(),
-      reject: sandbox.stub(),
-    };
-    amqp.subscribeChannel.consume.callsFake((queueName, callback) => {
-      callback(newMessage);
-      return {
-        consumerTag: newMessage.fields.consumerTag,
-      };
-    });
-    amqp.subscribeChannel.reject.callsFake((currentMessage) => {
-      rejectedMessage = currentMessage;
-    });
-
-    await amqp.listenQueue('testQueue', clientFunction);
-    while (clientFunction.callCount <= 0 && !rejectedMessage) {
-      await new Promise(resolve => setTimeout(resolve, 100));
-    }
-    expect(rejectedMessage).to.be.undefined;
-    expect(amqp.subscribeChannel.prefetch).to.have.been.calledOnce;
-    expect(clientFunction).to.have.been.calledOnce.and.calledWith(
-      {
-        headers: {
-          reply_to: 'replyTo1234567890',
-        },
-        content: 'Message content',
-      },
-      message,
-    );
-
-    expect(encryptor.decryptMessageContent).to.have.been.calledOnce.and.calledWith(
-      message.content,
-      'base64',
-    );
-  });
+  //
+  // it('Should listen queue and pass decrypted message to client function with protocol version 1', async () => {
+  //   const newMessage = {
+  //     fields: {
+  //       consumerTag: 'abcde',
+  //       deliveryTag: 12345,
+  //       exchange: 'test',
+  //       routingKey: 'test.hello',
+  //     },
+  //     properties: {
+  //       contentType: 'application/json',
+  //       contentEncoding: 'utf8',
+  //       headers: {
+  //         taskId: 'task1234567890',
+  //         execId: 'exec1234567890',
+  //         reply_to: 'replyTo1234567890',
+  //       },
+  //       deliveryMode: undefined,
+  //       priority: undefined,
+  //       correlationId: undefined,
+  //       replyTo: undefined,
+  //       expiration: undefined,
+  //       messageId: undefined,
+  //       timestamp: undefined,
+  //       type: undefined,
+  //       userId: undefined,
+  //       appId: undefined,
+  //       mandatory: true,
+  //       clusterId: '',
+  //     },
+  //     content: encryptor.encryptMessageContent(
+  //       { content: 'Message content' },
+  //       'base64',
+  //     ),
+  //   };
+  //
+  //   const amqp = new Amqp(settings);
+  //   let rejectedMessage;
+  //   const clientFunction = sandbox.stub();
+  //   amqp.subscribeChannel = {
+  //     consume: sandbox.stub(),
+  //     prefetch: sandbox.stub(),
+  //     reject: sandbox.stub(),
+  //   };
+  //   amqp.subscribeChannel.consume.callsFake((queueName, callback) => {
+  //     callback(newMessage);
+  //     return {
+  //       consumerTag: newMessage.fields.consumerTag,
+  //     };
+  //   });
+  //   amqp.subscribeChannel.reject.callsFake((currentMessage) => {
+  //     rejectedMessage = currentMessage;
+  //   });
+  //
+  //   await amqp.listenQueue('testQueue', clientFunction);
+  //   while (clientFunction.callCount <= 0 && !rejectedMessage) {
+  //     await new Promise(resolve => setTimeout(resolve, 100));
+  //   }
+  //   expect(rejectedMessage).to.be.undefined;
+  //   expect(amqp.subscribeChannel.prefetch).to.have.been.calledOnce;
+  //   expect(clientFunction).to.have.been.calledOnce.and.calledWith(
+  //     {
+  //       headers: {
+  //         reply_to: 'replyTo1234567890',
+  //       },
+  //       content: 'Message content',
+  //     },
+  //     message,
+  //   );
+  //
+  //   expect(encryptor.decryptMessageContent).to.have.been.calledOnce.and.calledWith(
+  //     message.content,
+  //     'base64',
+  //   );
+  // });
   it('Should listen queue and pass decrypted message to client function with protocol version 2', async () => {
     const amqp = new Amqp(settings);
     const clientFunction = sandbox.stub();

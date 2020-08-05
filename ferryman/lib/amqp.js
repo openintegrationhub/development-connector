@@ -317,7 +317,7 @@ class Amqp {
     }
     const errorPayload = JSON.stringify(payload);
 
-    let result = this.sendToExchange(settings.PUBLISH_MESSAGES_TO, settings.ERROR_ROUTING_KEY,
+    let result = this.sendToExchange(settings.BACKCHANNEL_EXCHANGE, settings.ERROR_ROUTING_KEY,
       errorPayload, properties, throttle);
 
     if (headers.reply_to) {
@@ -359,7 +359,7 @@ class Amqp {
     properties.headers.reboundIteration = reboundIteration;
 
     return this.sendToExchange(
-      settings.PUBLISH_MESSAGES_TO,
+      settings.BACKCHANNEL_EXCHANGE,
       settings.REBOUND_ROUTING_KEY,
       originalMessage.content,
       properties,
