@@ -218,6 +218,9 @@ describe('Ferryman', () => {
 
       payload = { param1: 'Value1' };
       message = {
+        headers: {
+          orchestratorToken,
+        },
         fields: {
           consumerTag: 'abcde',
           deliveryTag: 12345,
@@ -236,7 +239,7 @@ describe('Ferryman', () => {
             messageId: uuid.v4(),
             parentMessageId: uuid.v4(),
             // stepId: 'step_1',
-            orchestratorToken,
+            // orchestratorToken,
           },
           deliveryMode: undefined,
           priority: undefined,

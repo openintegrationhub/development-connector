@@ -14,7 +14,7 @@ const Settings = require('../../lib/settings');
 const amqp = require('../../lib/amqp.js');
 const encryptor = require('../../lib/encryptor.js');
 
-describe('Sailor', () => {
+describe.skip('Sailor', () => {
   let settings;
   let sandbox;
   let envVars;
