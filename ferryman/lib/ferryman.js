@@ -295,6 +295,10 @@ class Ferryman {
     // Prepare depending on message
     // this.flowId = message.properties.headers.taskId;
     // this.stepId = message.properties.headers.stepId;
+    if (!payload.headers || !payload.headers.orchestratorToken) {
+      console.error('No orchestratorToken!');
+      return;
+    }
     const tokenData = jwt.decode(payload.headers.orchestratorToken);
     this.flowId = tokenData.flowId;
     this.stepId = tokenData.stepId;

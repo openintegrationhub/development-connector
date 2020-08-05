@@ -250,7 +250,7 @@ class Amqp {
 
     // if (backChannel === true) {
     //     return this.sendToExchange(
-    // settings.BACK_CHANNEL, routingKey, encryptedData, properties, throttle);
+    // settings.BACKCHANNEL_EXCHANGE, routingKey, encryptedData, properties, throttle);
     // }
 
     return this.sendToExchange(
