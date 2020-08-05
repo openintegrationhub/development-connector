@@ -11,7 +11,7 @@
 
 /* eslint no-shadow: 0 */ // --> OFF
 
-const jwt = require('jsonwebtoken');
+// const jwt = require('jsonwebtoken');
 
 const nock = require('nock');
 const { expect } = require('chai');
@@ -30,6 +30,7 @@ function requireRun() {
   delete require.cache[resolved];
   return require(path);
 }
+
 describe('Integration Test for globalRun', () => {
   const customers = [
     {
@@ -43,19 +44,19 @@ describe('Integration Test for globalRun', () => {
   let runner;
 
   beforeEach(() => {
-    const orchestratorToken = jwt.sign({
-      flowId: '5559edd38968ec0736000003',
-      stepId: 'step_1',
-      userId: '5559edd38968ec0736000002',
-      function: 'init_trigger',
-      apiKey: '123456',
-      apiUsername: 'someuser@openintegrationhub.com',
-    }, 'somesecret');
+    // const orchestratorToken = jwt.sign({
+    //   flowId: '5559edd38968ec0736000003',
+    //   stepId: 'step_1',
+    //   userId: '5559edd38968ec0736000002',
+    //   function: 'init_trigger',
+    //   apiKey: '123456',
+    //   apiUsername: 'someuser@openintegrationhub.com',
+    // }, 'somesecret');
 
     inputMessage = {
       headers: {
         stepId: 'step_1',
-        orchestratorToken,
+        // orchestratorToken,
         // 'x-eio-routing-key': 'tenant.12345'
       },
       body: {

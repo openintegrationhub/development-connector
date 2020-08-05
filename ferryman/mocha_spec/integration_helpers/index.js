@@ -12,6 +12,7 @@ const { EventEmitter } = require('events');
 const PREFIX = 'sailor_nodejs_integration_test';
 const nock = require('nock');
 const express = require('express');
+const jwt = require('jsonwebtoken');
 const ShellTester = require('./ShellTester');
 const encryptor = require('../../lib/encryptor');
 
@@ -265,6 +266,15 @@ class AmqpHelperGlobal extends EventEmitter {
   }
 
   publishMessage(message, { parentMessageId, threadId } = {}, headers = {}) {
+    const orchestratorToken = jwt.sign({
+      flowId: '5559edd38968ec0736000003',
+      stepId: 'step_1',
+      userId: '5559edd38968ec0736000002',
+      function: 'init_trigger',
+      apiKey: '123456',
+      apiUsername: 'someuser@openintegrationhub.com',
+    }, 'somesecret');
+
     const msgHeaders = Object.assign({
       execId: env.ELASTICIO_EXEC_ID,
       taskId: env.ELASTICIO_FLOW_ID,
@@ -273,6 +283,7 @@ class AmqpHelperGlobal extends EventEmitter {
       threadId,
       stepId: message.headers.stepId,
       messageId: parentMessageId,
+      orchestratorToken,
     }, headers);
 
     const protocolVersion = Number(msgHeaders.protocolVersion || 1);
