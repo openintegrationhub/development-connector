@@ -588,56 +588,56 @@ describe('Ferryman', () => {
     //     }));
     // });
 
-    it('should send request to API server to update keys', async () => {
-      // settings.FUNCTION = 'keys_trigger';
-      const ferryman = new Ferryman(settings);
+    // it('should send request to API server to update keys', async () => {
+    //   // settings.FUNCTION = 'keys_trigger';
+    //   const ferryman = new Ferryman(settings);
+    //
+    //   const orchestratorToken = makeOrchestratorToken('keys_trigger');
+    //
+    //   message.properties.headers.orchestratorToken = orchestratorToken;
+    //
+    //   sandbox.stub(ferryman.apiClient.accounts, 'update').callsFake((accountId, keys) => {
+    //     expect(accountId).to.deep.equal('1234567890');
+    //     expect(keys).to.deep.equal({ keys: { oauth: { access_token: 'newAccessToken' } } });
+    //     return Promise.resolve();
+    //   });
+    //
+    //   await ferryman.prepare();
+    //   await ferryman.connect();
+    //   await ferryman.processMessage(payload, message);
+    //
+    //   expect(ferryman.apiClient.accounts.update).to.have.been.calledOnce;
+    //   expect(fakeAMQPConnection.connect).to.have.been.calledOnce;
+    //   expect(fakeAMQPConnection.ack).to.have.been.calledOnce.and.calledWith(message);
+    // });
 
-      const orchestratorToken = makeOrchestratorToken('keys_trigger');
-
-      message.properties.headers.orchestratorToken = orchestratorToken;
-
-      sandbox.stub(ferryman.apiClient.accounts, 'update').callsFake((accountId, keys) => {
-        expect(accountId).to.deep.equal('1234567890');
-        expect(keys).to.deep.equal({ keys: { oauth: { access_token: 'newAccessToken' } } });
-        return Promise.resolve();
-      });
-
-      await ferryman.prepare();
-      await ferryman.connect();
-      await ferryman.processMessage(payload, message);
-
-      expect(ferryman.apiClient.accounts.update).to.have.been.calledOnce;
-      expect(fakeAMQPConnection.connect).to.have.been.calledOnce;
-      expect(fakeAMQPConnection.ack).to.have.been.calledOnce.and.calledWith(message);
-    });
-
-    it('should emit error if failed to update keys', async () => {
-      // settings.FUNCTION = 'keys_trigger';
-      const ferryman = new Ferryman(settings);
-
-      const orchestratorToken = makeOrchestratorToken('keys_trigger');
-
-      message.properties.headers.orchestratorToken = orchestratorToken;
-
-      sandbox.stub(ferryman.apiClient.accounts, 'update').callsFake((accountId, keys) => {
-        expect(accountId).to.deep.equal('1234567890');
-        expect(keys).to.deep.equal({ keys: { oauth: { access_token: 'newAccessToken' } } });
-        return Promise.reject(new Error('Update keys error'));
-      });
-      await ferryman.prepare();
-      await ferryman.connect();
-      await ferryman.processMessage(payload, message);
-      // It will not throw an error because component
-      // process method is not `async`
-
-      expect(ferryman.apiClient.accounts.update).to.have.been.calledOnce;
-
-      expect(fakeAMQPConnection.connect).to.have.been.calledOnce;
-      expect(fakeAMQPConnection.sendError).to.have.been.calledOnce.and.calledWith(sinon.match({
-        message: 'Update keys error',
-      }));
-      expect(fakeAMQPConnection.ack).to.have.been.calledOnce.and.calledWith(message);
-    });
+    // it('should emit error if failed to update keys', async () => {
+    //   // settings.FUNCTION = 'keys_trigger';
+    //   const ferryman = new Ferryman(settings);
+    //
+    //   const orchestratorToken = makeOrchestratorToken('keys_trigger');
+    //
+    //   message.properties.headers.orchestratorToken = orchestratorToken;
+    //
+    //   sandbox.stub(ferryman.apiClient.accounts, 'update').callsFake((accountId, keys) => {
+    //     expect(accountId).to.deep.equal('1234567890');
+    //     expect(keys).to.deep.equal({ keys: { oauth: { access_token: 'newAccessToken' } } });
+    //     return Promise.reject(new Error('Update keys error'));
+    //   });
+    //   await ferryman.prepare();
+    //   await ferryman.connect();
+    //   await ferryman.processMessage(payload, message);
+    //   // It will not throw an error because component
+    //   // process method is not `async`
+    //
+    //   expect(ferryman.apiClient.accounts.update).to.have.been.calledOnce;
+    //
+    //   expect(fakeAMQPConnection.connect).to.have.been.calledOnce;
+    //   expect(fakeAMQPConnection.sendError).to.have.been.calledOnce.and.calledWith(sinon.match({
+    //     message: 'Update keys error',
+    //   }));
+    //   expect(fakeAMQPConnection.ack).to.have.been.calledOnce.and.calledWith(message);
+    // });
 
     it('should call sendRebound() and ack()', async () => {
       // settings.FUNCTION = 'rebound_trigger';
@@ -822,7 +822,7 @@ describe('Ferryman', () => {
 
       const orchestratorToken = makeOrchestratorToken('error_trigger');
 
-      message.properties.headers.orchestratorToken = orchestratorToken;
+      message2.properties.headers.orchestratorToken = orchestratorToken;
 
       await ferryman.prepare();
       await ferryman.connect();
