@@ -21,6 +21,16 @@ const encryptor = require('../../lib/encryptor.js');
 const flowId = '5559edd38968ec0736000003';
 // const stepId = 'step_1';
 
+function makeOrchestratorToken(action) {
+  return jwt.sign({
+    flowId: '5559edd38968ec0736000003',
+    stepId: 'step_1',
+    userId: '5559edd38968ec0736000002',
+    function: action,
+    apiKey: '123456',
+    apiUsername: 'someuser@openintegrationhub.com',
+  }, 'somesecret');
+}
 
 describe('Ferryman', () => {
   let settings;
@@ -207,14 +217,7 @@ describe('Ferryman', () => {
       };
       sandbox.stub(amqp, 'Amqp').returns(fakeAMQPConnection);
 
-      const orchestratorToken = jwt.sign({
-        flowId: '5559edd38968ec0736000003',
-        stepId: 'step_1',
-        userId: '5559edd38968ec0736000002',
-        function: 'init_trigger',
-        apiKey: '123456',
-        apiUsername: 'someuser@openintegrationhub.com',
-      }, 'somesecret');
+      const orchestratorToken = makeOrchestratorToken('init_trigger');
 
       payload = {
         param1: 'Value1',
@@ -265,8 +268,12 @@ describe('Ferryman', () => {
     });
 
     it('should call sendBackChannel() and ack() if success', async () => {
-      settings.FUNCTION = 'data_trigger';
+      // settings.FUNCTION = 'data_trigger';
       const ferryman = new Ferryman(settings);
+
+      const orchestratorToken = makeOrchestratorToken('data_trigger');
+
+      payload.headers.orchestratorToken = orchestratorToken;
 
       await ferryman.connect();
       await ferryman.prepare();
@@ -344,8 +351,12 @@ describe('Ferryman', () => {
     // });
 
     it('should call sendBackChannel() and ack() only once', async () => {
-      settings.FUNCTION = 'end_after_data_twice';
+      // settings.FUNCTION = 'end_after_data_twice';
       const ferryman = new Ferryman(settings);
+
+      const orchestratorToken = makeOrchestratorToken('end_after_data_twice');
+
+      payload.headers.orchestratorToken = orchestratorToken;
 
       await ferryman.connect();
       await ferryman.prepare();
@@ -584,8 +595,12 @@ describe('Ferryman', () => {
     // });
 
     it('should send request to API server to update keys', async () => {
-      settings.FUNCTION = 'keys_trigger';
+      // settings.FUNCTION = 'keys_trigger';
       const ferryman = new Ferryman(settings);
+
+      const orchestratorToken = makeOrchestratorToken('keys_trigger');
+
+      payload.headers.orchestratorToken = orchestratorToken;
 
       sandbox.stub(ferryman.apiClient.accounts, 'update').callsFake((accountId, keys) => {
         expect(accountId).to.deep.equal('1234567890');
@@ -603,8 +618,12 @@ describe('Ferryman', () => {
     });
 
     it('should emit error if failed to update keys', async () => {
-      settings.FUNCTION = 'keys_trigger';
+      // settings.FUNCTION = 'keys_trigger';
       const ferryman = new Ferryman(settings);
+
+      const orchestratorToken = makeOrchestratorToken('keys_trigger');
+
+      payload.headers.orchestratorToken = orchestratorToken;
 
       sandbox.stub(ferryman.apiClient.accounts, 'update').callsFake((accountId, keys) => {
         expect(accountId).to.deep.equal('1234567890');
@@ -627,8 +646,12 @@ describe('Ferryman', () => {
     });
 
     it('should call sendRebound() and ack()', async () => {
-      settings.FUNCTION = 'rebound_trigger';
+      // settings.FUNCTION = 'rebound_trigger';
       const ferryman = new Ferryman(settings);
+
+      const orchestratorToken = makeOrchestratorToken('rebound_trigger');
+
+      payload.headers.orchestratorToken = orchestratorToken;
 
       await ferryman.prepare();
       await ferryman.connect();
@@ -641,8 +664,12 @@ describe('Ferryman', () => {
     });
 
     it('should call sendSnapshot() and ack() after a `snapshot` event', async () => {
-      settings.FUNCTION = 'update';
+      // settings.FUNCTION = 'update';
       const ferryman = new Ferryman(settings);
+
+      const orchestratorToken = makeOrchestratorToken('update');
+
+      payload.headers.orchestratorToken = orchestratorToken;
 
       await ferryman.prepare();
       await ferryman.connect();
@@ -677,8 +704,12 @@ describe('Ferryman', () => {
     });
 
     it('should call sendSnapshot() and ack() after an `updateSnapshot` event', async () => {
-      settings.FUNCTION = 'update';
+      // settings.FUNCTION = 'update';
       const ferryman = new Ferryman(settings);
+
+      const orchestratorToken = makeOrchestratorToken('update');
+
+      payload.headers.orchestratorToken = orchestratorToken;
 
       await ferryman.prepare();
       await ferryman.connect();
@@ -714,8 +745,12 @@ describe('Ferryman', () => {
     });
 
     it('should send error if error happened', async () => {
-      settings.FUNCTION = 'error_trigger';
+      // settings.FUNCTION = 'error_trigger';
       const ferryman = new Ferryman(settings);
+
+      const orchestratorToken = makeOrchestratorToken('error_trigger');
+
+      payload.headers.orchestratorToken = orchestratorToken;
 
       await ferryman.prepare();
       await ferryman.connect();
@@ -736,8 +771,12 @@ describe('Ferryman', () => {
     });
 
     it('should send error and reject only once()', async () => {
-      settings.FUNCTION = 'end_after_error_twice';
+      // settings.FUNCTION = 'end_after_error_twice';
       const ferryman = new Ferryman(settings);
+
+      const orchestratorToken = makeOrchestratorToken('end_after_error_twice');
+
+      payload.headers.orchestratorToken = orchestratorToken;
 
       await ferryman.prepare();
       await ferryman.connect();
@@ -752,8 +791,12 @@ describe('Ferryman', () => {
     });
 
     it('should reject message if trigger is missing', async () => {
-      settings.FUNCTION = 'missing_trigger';
+      // settings.FUNCTION = 'missing_trigger';
       const ferryman = new Ferryman(settings);
+
+      const orchestratorToken = makeOrchestratorToken('missing_trigger');
+
+      payload.headers.orchestratorToken = orchestratorToken;
 
       await ferryman.prepare();
       await ferryman.connect();
@@ -780,8 +823,12 @@ describe('Ferryman', () => {
       const message2 = _.cloneDeep(message);
       message2.properties.headers.taskId = 'othertaskid';
 
-      settings.FUNCTION = 'error_trigger';
+      // settings.FUNCTION = 'error_trigger';
       const ferryman = new Ferryman(settings);
+
+      const orchestratorToken = makeOrchestratorToken('error_trigger');
+
+      payload.headers.orchestratorToken = orchestratorToken;
 
       await ferryman.prepare();
       await ferryman.connect();
@@ -791,9 +838,13 @@ describe('Ferryman', () => {
     });
 
     it('should catch all data calls and all error calls', async () => {
-      settings.FUNCTION = 'datas_and_errors';
+      // settings.FUNCTION = 'datas_and_errors';
 
       const ferryman = new Ferryman(settings);
+
+      const orchestratorToken = makeOrchestratorToken('datas_and_errors');
+
+      payload.headers.orchestratorToken = orchestratorToken;
 
       await ferryman.prepare();
       await ferryman.connect();
@@ -812,8 +863,12 @@ describe('Ferryman', () => {
     });
 
     it('should handle errors in httpReply properly', async () => {
-      settings.FUNCTION = 'http_reply';
+      // settings.FUNCTION = 'http_reply';
       const ferryman = new Ferryman(settings);
+
+      const orchestratorToken = makeOrchestratorToken('http_reply');
+
+      payload.headers.orchestratorToken = orchestratorToken;
 
       await ferryman.connect();
       await ferryman.prepare();
@@ -872,12 +927,16 @@ describe('Ferryman', () => {
     });
 
     it('should handle errors in httpReply properly', async () => {
-      settings.FUNCTION = 'http_reply';
+      // settings.FUNCTION = 'http_reply';
       const ferryman = new Ferryman(settings);
 
       fakeAMQPConnection.sendHttpReply.callsFake(() => {
         throw new Error('Failed to send HTTP reply');
       });
+
+      const orchestratorToken = makeOrchestratorToken('http_reply');
+
+      payload.headers.orchestratorToken = orchestratorToken;
 
       await ferryman.connect();
       await ferryman.prepare();
