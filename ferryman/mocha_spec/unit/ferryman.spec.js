@@ -262,17 +262,10 @@ describe('Ferryman', () => {
       settings.FUNCTION = 'data_trigger';
       const ferryman = new Ferryman(settings);
 
-      sandbox.stub(ferryman.apiClient.tasks, 'retrieveStep').callsFake((taskId, stepId) => {
-        expect(taskId).to.deep.equal('5559edd38968ec0736000003');
-        expect(stepId).to.deep.equal('step_1');
-
-        return Promise.resolve({});
-      });
-
       await ferryman.connect();
       await ferryman.prepare();
       await ferryman.processMessage(payload, message);
-      expect(ferryman.apiClient.tasks.retrieveStep).to.have.callCount(1);
+
       expect(fakeAMQPConnection.connect).to.have.been.calledOnce;
       expect(fakeAMQPConnection.sendBackChannel).to.have.been.calledOnce.and.calledWith(
         { items: [1, 2, 3, 4, 5, 6] },
@@ -312,16 +305,10 @@ describe('Ferryman', () => {
       settings.FUNCTION = 'data_trigger';
       const ferryman = new Ferryman(settings);
 
-      sandbox.stub(ferryman.apiClient.tasks, 'retrieveStep').callsFake((taskId, stepId) => {
-        expect(taskId).to.deep.equal('5559edd38968ec0736000003');
-        expect(stepId).to.deep.equal('step_1');
-        return Promise.resolve({});
-      });
-
       await ferryman.connect();
       await ferryman.prepare();
       await ferryman.processMessage(payload, message);
-      expect(ferryman.apiClient.tasks.retrieveStep).to.have.callCount(1);
+
       expect(fakeAMQPConnection.connect).to.have.been.calledOnce;
       expect(fakeAMQPConnection.sendBackChannel).to.have.been.calledOnce.and.calledWith(
         { items: [1, 2, 3, 4, 5, 6] },
@@ -350,16 +337,10 @@ describe('Ferryman', () => {
       settings.FUNCTION = 'end_after_data_twice';
       const ferryman = new Ferryman(settings);
 
-      sandbox.stub(ferryman.apiClient.tasks, 'retrieveStep').callsFake((taskId, stepId) => {
-        expect(taskId).to.deep.equal('5559edd38968ec0736000003');
-        expect(stepId).to.deep.equal('step_1');
-        return Promise.resolve({});
-      });
-
       await ferryman.connect();
       await ferryman.prepare();
       await ferryman.processMessage(payload, message);
-      expect(ferryman.apiClient.tasks.retrieveStep).to.have.callCount(1);
+
       expect(fakeAMQPConnection.connect).to.have.been.calledOnce;
       expect(fakeAMQPConnection.sendBackChannel).to.have.been.calledOnce;
       expect(fakeAMQPConnection.reject).not.to.have.been.called;
@@ -596,16 +577,6 @@ describe('Ferryman', () => {
       settings.FUNCTION = 'keys_trigger';
       const ferryman = new Ferryman(settings);
 
-      sandbox.stub(ferryman.apiClient.tasks, 'retrieveStep').callsFake((taskId, stepId) => {
-        expect(taskId).to.deep.equal('5559edd38968ec0736000003');
-        expect(stepId).to.deep.equal('step_1');
-        return Promise.resolve({
-          config: {
-            _account: '1234567890',
-          },
-        });
-      });
-
       sandbox.stub(ferryman.apiClient.accounts, 'update').callsFake((accountId, keys) => {
         expect(accountId).to.deep.equal('1234567890');
         expect(keys).to.deep.equal({ keys: { oauth: { access_token: 'newAccessToken' } } });
@@ -615,7 +586,7 @@ describe('Ferryman', () => {
       await ferryman.prepare();
       await ferryman.connect();
       await ferryman.processMessage(payload, message);
-      expect(ferryman.apiClient.tasks.retrieveStep).to.have.callCount(1);
+
       expect(ferryman.apiClient.accounts.update).to.have.been.calledOnce;
       expect(fakeAMQPConnection.connect).to.have.been.calledOnce;
       expect(fakeAMQPConnection.ack).to.have.been.calledOnce.and.calledWith(message);
@@ -624,16 +595,6 @@ describe('Ferryman', () => {
     it('should emit error if failed to update keys', async () => {
       settings.FUNCTION = 'keys_trigger';
       const ferryman = new Ferryman(settings);
-
-      sandbox.stub(ferryman.apiClient.tasks, 'retrieveStep').callsFake((taskId, stepId) => {
-        expect(taskId).to.deep.equal('5559edd38968ec0736000003');
-        expect(stepId).to.deep.equal('step_1');
-        return Promise.resolve({
-          config: {
-            _account: '1234567890',
-          },
-        });
-      });
 
       sandbox.stub(ferryman.apiClient.accounts, 'update').callsFake((accountId, keys) => {
         expect(accountId).to.deep.equal('1234567890');
@@ -645,7 +606,7 @@ describe('Ferryman', () => {
       await ferryman.processMessage(payload, message);
       // It will not throw an error because component
       // process method is not `async`
-      expect(ferryman.apiClient.tasks.retrieveStep).to.have.callCount(1);
+
       expect(ferryman.apiClient.accounts.update).to.have.been.calledOnce;
 
       expect(fakeAMQPConnection.connect).to.have.been.calledOnce;
@@ -659,16 +620,9 @@ describe('Ferryman', () => {
       settings.FUNCTION = 'rebound_trigger';
       const ferryman = new Ferryman(settings);
 
-      sandbox.stub(ferryman.apiClient.tasks, 'retrieveStep').callsFake((taskId, stepId) => {
-        expect(taskId).to.deep.equal('5559edd38968ec0736000003');
-        expect(stepId).to.deep.equal('step_1');
-        return Promise.resolve({});
-      });
-
       await ferryman.prepare();
       await ferryman.connect();
       await ferryman.processMessage(payload, message);
-      expect(ferryman.apiClient.tasks.retrieveStep).to.have.callCount(1);
 
       expect(fakeAMQPConnection.sendRebound).to.have.been.calledOnce.and.calledWith(sinon.match({
         message: 'Rebound reason',
@@ -680,19 +634,12 @@ describe('Ferryman', () => {
       settings.FUNCTION = 'update';
       const ferryman = new Ferryman(settings);
 
-      sandbox.stub(ferryman.apiClient.tasks, 'retrieveStep').callsFake((taskId, stepId) => {
-        expect(taskId).to.deep.equal('5559edd38968ec0736000003');
-        expect(stepId).to.deep.equal('step_1');
-        return Promise.resolve({});
-      });
-
       await ferryman.prepare();
       await ferryman.connect();
       const currentPayload = {
         snapshot: { blabla: 'blablabla' },
       };
       await ferryman.processMessage(currentPayload, message);
-      expect(ferryman.apiClient.tasks.retrieveStep).to.have.callCount(1);
 
       const expectedSnapshot = { blabla: 'blablabla' };
       expect(fakeAMQPConnection.connect).to.have.been.calledOnce;
@@ -723,24 +670,13 @@ describe('Ferryman', () => {
       settings.FUNCTION = 'update';
       const ferryman = new Ferryman(settings);
 
-      sandbox.stub(ferryman.apiClient.tasks, 'retrieveStep').callsFake((taskId, stepId) => {
-        expect(taskId).to.deep.equal('5559edd38968ec0736000003');
-        expect(stepId).to.deep.equal('step_1');
-        return Promise.resolve({
-          snapshot: {
-            id: '123456789',
-            value: 'abc',
-          },
-        });
-      });
-
       await ferryman.prepare();
       await ferryman.connect();
       const currentPayload = {
         updateSnapshot: { value: 'new value' },
       };
       await ferryman.processMessage(currentPayload, message);
-      expect(ferryman.apiClient.tasks.retrieveStep).to.have.callCount(1);
+
       const expectedSnapshot = { id: '123456789', value: 'new value' };
       expect(fakeAMQPConnection.connect).to.have.been.calledOnce;
 
@@ -771,16 +707,9 @@ describe('Ferryman', () => {
       settings.FUNCTION = 'error_trigger';
       const ferryman = new Ferryman(settings);
 
-      sandbox.stub(ferryman.apiClient.tasks, 'retrieveStep').callsFake((taskId, stepId) => {
-        expect(taskId).to.deep.equal('5559edd38968ec0736000003');
-        expect(stepId).to.deep.equal('step_1');
-        return Promise.resolve({});
-      });
-
       await ferryman.prepare();
       await ferryman.connect();
       await ferryman.processMessage(payload, message);
-      expect(ferryman.apiClient.tasks.retrieveStep).to.have.callCount(1);
 
       expect(fakeAMQPConnection.connect).to.have.been.calledOnce;
 
@@ -800,16 +729,9 @@ describe('Ferryman', () => {
       settings.FUNCTION = 'end_after_error_twice';
       const ferryman = new Ferryman(settings);
 
-      sandbox.stub(ferryman.apiClient.tasks, 'retrieveStep').callsFake((taskId, stepId) => {
-        expect(taskId).to.deep.equal('5559edd38968ec0736000003');
-        expect(stepId).to.deep.equal('step_1');
-        return Promise.resolve({});
-      });
-
       await ferryman.prepare();
       await ferryman.connect();
       await ferryman.processMessage(payload, message);
-      expect(ferryman.apiClient.tasks.retrieveStep).to.have.callCount(1);
 
       expect(fakeAMQPConnection.connect).to.have.been.calledOnce;
 
@@ -823,16 +745,9 @@ describe('Ferryman', () => {
       settings.FUNCTION = 'missing_trigger';
       const ferryman = new Ferryman(settings);
 
-      sandbox.stub(ferryman.apiClient.tasks, 'retrieveStep').callsFake((taskId, stepId) => {
-        expect(taskId).to.deep.equal('5559edd38968ec0736000003');
-        expect(stepId).to.deep.equal('step_1');
-        return Promise.resolve({});
-      });
-
       await ferryman.prepare();
       await ferryman.connect();
       await ferryman.processMessage(payload, message);
-      expect(ferryman.apiClient.tasks.retrieveStep).to.have.callCount(1);
 
       expect(fakeAMQPConnection.connect).to.have.been.calledOnce;
 
@@ -858,16 +773,10 @@ describe('Ferryman', () => {
       settings.FUNCTION = 'error_trigger';
       const ferryman = new Ferryman(settings);
 
-      sandbox.stub(ferryman.apiClient.tasks, 'retrieveStep').callsFake((taskId, stepId) => {
-        expect(taskId).to.deep.equal('5559edd38968ec0736000003');
-        expect(stepId).to.deep.equal('step_1');
-        return Promise.resolve({});
-      });
-
       await ferryman.prepare();
       await ferryman.connect();
       await ferryman.processMessage(payload, message2);
-      expect(ferryman.apiClient.tasks.retrieveStep).to.have.callCount(1);
+
       expect(fakeAMQPConnection.reject).to.have.been.calledOnce;
     });
 
@@ -876,16 +785,9 @@ describe('Ferryman', () => {
 
       const ferryman = new Ferryman(settings);
 
-      sandbox.stub(ferryman.apiClient.tasks, 'retrieveStep').callsFake((taskId, stepId) => {
-        expect(taskId).to.deep.equal('5559edd38968ec0736000003');
-        expect(stepId).to.deep.equal('step_1');
-        return Promise.resolve({});
-      });
-
       await ferryman.prepare();
       await ferryman.connect();
       await ferryman.processMessage(payload, message);
-      expect(ferryman.apiClient.tasks.retrieveStep).to.have.callCount(1);
 
       expect(fakeAMQPConnection.connect).to.have.been.calledOnce;
 
@@ -903,13 +805,9 @@ describe('Ferryman', () => {
       settings.FUNCTION = 'http_reply';
       const ferryman = new Ferryman(settings);
 
-      sandbox.stub(ferryman.apiClient.tasks, 'retrieveStep').resolves({});
-
       await ferryman.connect();
       await ferryman.prepare();
       await ferryman.processMessage(payload, message);
-      expect(ferryman.apiClient.tasks.retrieveStep)
-        .to.have.been.calledWith('5559edd38968ec0736000003', 'step_1');
 
       expect(fakeAMQPConnection.connect).to.have.been.calledOnce;
       expect(fakeAMQPConnection.sendHttpReply).to.have.been.calledOnce.and.calledWith(
@@ -967,8 +865,6 @@ describe('Ferryman', () => {
       settings.FUNCTION = 'http_reply';
       const ferryman = new Ferryman(settings);
 
-      sandbox.stub(ferryman.apiClient.tasks, 'retrieveStep').resolves({});
-
       fakeAMQPConnection.sendHttpReply.callsFake(() => {
         throw new Error('Failed to send HTTP reply');
       });
@@ -976,8 +872,6 @@ describe('Ferryman', () => {
       await ferryman.connect();
       await ferryman.prepare();
       await ferryman.processMessage(payload, message);
-      expect(ferryman.apiClient.tasks.retrieveStep)
-        .to.have.been.calledWith('5559edd38968ec0736000003', 'step_1');
 
       expect(fakeAMQPConnection.connect).to.have.been.calledOnce;
       expect(fakeAMQPConnection.sendHttpReply).to.have.been.calledOnce.and.calledWith(
