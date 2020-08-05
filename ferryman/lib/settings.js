@@ -65,8 +65,8 @@ function readFrom(envVars) {
     NO_SELF_PASSTRHOUGH: false,
     PROTOCOL_VERSION: 1,
 
-    // CONTAINER_ID: 'dc1c8c3f-f9cb-49e1-a6b8-716af9e15948',
-    // WORKSPACE_ID: '5559edd38968ec073600683',
+    CONTAINER_ID: 'dc1c8c3f-f9cb-49e1-a6b8-716af9e15948',
+    WORKSPACE_ID: '5559edd38968ec073600683',
   };
 
   if (envVars.ELASTICIO_ADDITIONAL_VARS_FOR_HEADERS) {

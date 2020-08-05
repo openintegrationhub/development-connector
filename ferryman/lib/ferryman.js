@@ -295,11 +295,14 @@ class Ferryman {
     // Prepare depending on message
     // this.flowId = message.properties.headers.taskId;
     // this.stepId = message.properties.headers.stepId;
-    if (!payload.headers || !payload.headers.orchestratorToken) {
+    if (!message.properties
+      || !message.properties.headers
+      || !message.properties.headers.orchestratorToken
+    ) {
       console.error('No orchestratorToken!');
       return;
     }
-    const tokenData = jwt.decode(payload.headers.orchestratorToken);
+    const tokenData = jwt.decode(message.properties.headers.orchestratorToken);
     this.flowId = tokenData.flowId;
     this.stepId = tokenData.stepId;
     this.userId = tokenData.userId;

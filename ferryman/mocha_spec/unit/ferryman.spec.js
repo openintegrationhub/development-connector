@@ -221,15 +221,12 @@ describe('Ferryman', () => {
 
       payload = {
         param1: 'Value1',
-        headers: {
-          orchestratorToken,
-        },
-      };
-
-      message = {
         // headers: {
         //   orchestratorToken,
         // },
+      };
+
+      message = {
         fields: {
           consumerTag: 'abcde',
           deliveryTag: 12345,
@@ -240,6 +237,7 @@ describe('Ferryman', () => {
           contentType: 'application/json',
           contentEncoding: 'utf8',
           headers: {
+            orchestratorToken,
             taskId: '5559edd38968ec0736000003',
             execId: 'some-exec-id',
             userId: '5559edd38968ec0736000002',
@@ -248,7 +246,6 @@ describe('Ferryman', () => {
             messageId: uuid.v4(),
             parentMessageId: uuid.v4(),
             // stepId: 'step_1',
-            // orchestratorToken,
           },
           deliveryMode: undefined,
           priority: undefined,
@@ -273,37 +270,34 @@ describe('Ferryman', () => {
 
       const orchestratorToken = makeOrchestratorToken('data_trigger');
 
-      payload.headers.orchestratorToken = orchestratorToken;
+      message.properties.headers.orchestratorToken = orchestratorToken;
 
       await ferryman.connect();
       await ferryman.prepare();
       await ferryman.processMessage(payload, message);
 
-      console.log('Flag 1');
       expect(fakeAMQPConnection.connect).to.have.been.calledOnce;
-      console.log('Flag 2');
-      expect(fakeAMQPConnection.sendBackChannel).to.have.been.calledOnce;
-      // expect(fakeAMQPConnection.sendBackChannel).to.have.been.calledOnce.and.calledWith(
-      //   { items: [1, 2, 3, 4, 5, 6] },
-      //   sinon.match({
-      //     cid: 1,
-      //     compId: '5559edd38968ec0736000456',
-      //     containerId: 'dc1c8c3f-f9cb-49e1-a6b8-716af9e15948',
-      //     end: sinon.match.number,
-      //     execId: 'some-exec-id',
-      //     function: 'data_trigger',
-      //     messageId: sinon.match.string,
-      //     parentMessageId: message.properties.headers.messageId,
-      //     start: sinon.match.number,
-      //     stepId: 'step_1',
-      //     taskId: '5559edd38968ec0736000003',
-      //     threadId: message.properties.headers.threadId,
-      //     userId: '5559edd38968ec0736000002',
-      //     workspaceId: '5559edd38968ec073600683',
-      //     'x-eio-routing-key': 'test.hello',
-      //   }),
-      // );
-      console.log('Flag 3');
+
+      expect(fakeAMQPConnection.sendBackChannel).to.have.been.calledOnce.and.calledWith(
+        { items: [1, 2, 3, 4, 5, 6] },
+        sinon.match({
+          cid: 1,
+          compId: '5559edd38968ec0736000456',
+          containerId: 'dc1c8c3f-f9cb-49e1-a6b8-716af9e15948',
+          end: sinon.match.number,
+          execId: 'some-exec-id',
+          function: 'data_trigger',
+          messageId: sinon.match.string,
+          parentMessageId: message.properties.headers.messageId,
+          start: sinon.match.number,
+          stepId: 'step_1',
+          taskId: '5559edd38968ec0736000003',
+          threadId: message.properties.headers.threadId,
+          userId: '5559edd38968ec0736000002',
+          workspaceId: '5559edd38968ec073600683',
+          'x-eio-routing-key': 'test.hello',
+        }),
+      );
 
       expect(fakeAMQPConnection.ack).to.have.been.calledOnce.and.calledWith(message);
     });
@@ -356,7 +350,7 @@ describe('Ferryman', () => {
 
       const orchestratorToken = makeOrchestratorToken('end_after_data_twice');
 
-      payload.headers.orchestratorToken = orchestratorToken;
+      message.properties.headers.orchestratorToken = orchestratorToken;
 
       await ferryman.connect();
       await ferryman.prepare();
@@ -600,7 +594,7 @@ describe('Ferryman', () => {
 
       const orchestratorToken = makeOrchestratorToken('keys_trigger');
 
-      payload.headers.orchestratorToken = orchestratorToken;
+      message.properties.headers.orchestratorToken = orchestratorToken;
 
       sandbox.stub(ferryman.apiClient.accounts, 'update').callsFake((accountId, keys) => {
         expect(accountId).to.deep.equal('1234567890');
@@ -623,7 +617,7 @@ describe('Ferryman', () => {
 
       const orchestratorToken = makeOrchestratorToken('keys_trigger');
 
-      payload.headers.orchestratorToken = orchestratorToken;
+      message.properties.headers.orchestratorToken = orchestratorToken;
 
       sandbox.stub(ferryman.apiClient.accounts, 'update').callsFake((accountId, keys) => {
         expect(accountId).to.deep.equal('1234567890');
@@ -651,7 +645,7 @@ describe('Ferryman', () => {
 
       const orchestratorToken = makeOrchestratorToken('rebound_trigger');
 
-      payload.headers.orchestratorToken = orchestratorToken;
+      message.properties.headers.orchestratorToken = orchestratorToken;
 
       await ferryman.prepare();
       await ferryman.connect();
@@ -669,7 +663,7 @@ describe('Ferryman', () => {
 
       const orchestratorToken = makeOrchestratorToken('update');
 
-      payload.headers.orchestratorToken = orchestratorToken;
+      message.properties.headers.orchestratorToken = orchestratorToken;
 
       await ferryman.prepare();
       await ferryman.connect();
@@ -709,7 +703,7 @@ describe('Ferryman', () => {
 
       const orchestratorToken = makeOrchestratorToken('update');
 
-      payload.headers.orchestratorToken = orchestratorToken;
+      message.properties.headers.orchestratorToken = orchestratorToken;
 
       await ferryman.prepare();
       await ferryman.connect();
@@ -750,7 +744,7 @@ describe('Ferryman', () => {
 
       const orchestratorToken = makeOrchestratorToken('error_trigger');
 
-      payload.headers.orchestratorToken = orchestratorToken;
+      message.properties.headers.orchestratorToken = orchestratorToken;
 
       await ferryman.prepare();
       await ferryman.connect();
@@ -776,7 +770,7 @@ describe('Ferryman', () => {
 
       const orchestratorToken = makeOrchestratorToken('end_after_error_twice');
 
-      payload.headers.orchestratorToken = orchestratorToken;
+      message.properties.headers.orchestratorToken = orchestratorToken;
 
       await ferryman.prepare();
       await ferryman.connect();
@@ -796,7 +790,7 @@ describe('Ferryman', () => {
 
       const orchestratorToken = makeOrchestratorToken('missing_trigger');
 
-      payload.headers.orchestratorToken = orchestratorToken;
+      message.properties.headers.orchestratorToken = orchestratorToken;
 
       await ferryman.prepare();
       await ferryman.connect();
@@ -828,7 +822,7 @@ describe('Ferryman', () => {
 
       const orchestratorToken = makeOrchestratorToken('error_trigger');
 
-      payload.headers.orchestratorToken = orchestratorToken;
+      message.properties.headers.orchestratorToken = orchestratorToken;
 
       await ferryman.prepare();
       await ferryman.connect();
@@ -844,7 +838,7 @@ describe('Ferryman', () => {
 
       const orchestratorToken = makeOrchestratorToken('datas_and_errors');
 
-      payload.headers.orchestratorToken = orchestratorToken;
+      message.properties.headers.orchestratorToken = orchestratorToken;
 
       await ferryman.prepare();
       await ferryman.connect();
@@ -868,7 +862,7 @@ describe('Ferryman', () => {
 
       const orchestratorToken = makeOrchestratorToken('http_reply');
 
-      payload.headers.orchestratorToken = orchestratorToken;
+      message.properties.headers.orchestratorToken = orchestratorToken;
 
       await ferryman.connect();
       await ferryman.prepare();
@@ -936,7 +930,7 @@ describe('Ferryman', () => {
 
       const orchestratorToken = makeOrchestratorToken('http_reply');
 
-      payload.headers.orchestratorToken = orchestratorToken;
+      message.properties.headers.orchestratorToken = orchestratorToken;
 
       await ferryman.connect();
       await ferryman.prepare();
