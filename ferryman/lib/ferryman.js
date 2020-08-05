@@ -65,36 +65,16 @@ class Ferryman {
     return this.amqpConnection.connect(this.settings.AMQP_URI);
   }
 
-  // async prepare(skipInit, token) {
-  //     const {
-  //         settings: {
-  //             COMPONENT_PATH: compPath,
-  //             FLOW_ID: flowId,
-  //             STEP_ID: stepId
-  //         },
-  //         apiClient,
-  //         componentReader
-  //     } = this;
-  //
-  //     let stepData;
-  //
-  //     if (skipInit) {
-  //         stepData = await this.getSnapShot(flowId, stepId, token);
-  //         // stepData = await apiClient.tasks.retrieveStep(flowId, stepId);
-  //     } else {
-  //         stepData = await apiClient.tasks.retrieveStep(flowId, stepId);
-  //     }
-  //
-  //     log.debug('Received step data: %j', stepData);
-  //     assert(stepData);
-  //
-  //     this.snapshot = stepData.snapshot;
-  //
-  //     // this.stepData = Object.assign({}, this.stepData, stepData);
-  //     this.stepData = Object.assign({}, this.stepData, stepData);
-  //
-  //     if (!skipInit) { await componentReader.init(compPath); }
-  // }
+  async prepare() {
+    const {
+      settings: {
+        COMPONENT_PATH: compPath,
+      },
+      componentReader,
+    } = this;
+
+    await componentReader.init(compPath);
+  }
 
   async getSnapShot(flowId, stepId, token) {
     const getOptions = {
@@ -207,7 +187,6 @@ class Ferryman {
 
   invokeModuleFunction(moduleFunction, data, passedFunction) {
     const { settings } = this;
-
     const { stepData } = this;
     return co(function* gen() {
       const module = yield this.componentReader.loadTriggerOrAction(
@@ -316,7 +295,7 @@ class Ferryman {
     // Prepare depending on message
     // this.flowId = message.properties.headers.taskId;
     // this.stepId = message.properties.headers.stepId;
-    const tokenData = jwt.decode(message.properties.headers.orchestratorToken);
+    const tokenData = jwt.decode(payload.headers.orchestratorToken);
     this.flowId = tokenData.flowId;
     this.stepId = tokenData.stepId;
     this.userId = tokenData.userId;
@@ -337,7 +316,6 @@ class Ferryman {
     let stepData = await this.getSnapShot(this.flowId, this.stepId, this.apiKey); // token
     this.snapshot = stepData.snapshot;
     this.stepData = Object.assign({}, this.stepData, stepData);
-
     // todo: Find a way to do this without overwriting this.stepData
     // console.log(message)
     // await this.prepare(true, message.properties.headers.authToken);
@@ -376,6 +354,7 @@ class Ferryman {
         incomingMessageHeaders.authToken,
       );
     }
+
 
     stepData = this.stepData; // eslint-disable-line
 
@@ -422,6 +401,7 @@ class Ferryman {
       self.amqpConnection.reject(message);
       return;
     }
+
 
     // eslint-disable-next-line consistent-return
     return new Promise((resolve) => {
@@ -478,7 +458,6 @@ class Ferryman {
         }
 
         // headers['x-eio-routing-key'] = routingKey;
-
         try {
           // return await self.amqpConnection.sendData(data, headers, self.throttles.data);
           return await self.amqpConnection.sendBackChannel(data, headers, self.throttles.data);

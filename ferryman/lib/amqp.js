@@ -274,6 +274,7 @@ class Amqp {
     const routingKey = getRoutingKeyFromHeaders(data.headers) || settings.OUTPUT_ROUTING_KEY;
     properties.headers.protocolVersion = settings.PROTOCOL_VERSION;
 
+
     return this.prepareMessageAndSendToExchange(data, properties, routingKey, throttle, true);
   }
 

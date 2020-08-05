@@ -41,7 +41,7 @@ class AmqpHelper extends EventEmitter {
     env.ELASTICIO_LISTEN_MESSAGES_ON = `${PREFIX}:messages`;
     env.ELASTICIO_PUBLISH_MESSAGES_TO = `${PREFIX}:exchange`;
 
-    env.ELASTICIO_BACK_CHANNEL = `${PREFIX}:back_channel`;
+    env.ELASTICIO_BACKCHANNEL_EXCHANGE = `${PREFIX}:BACKCHANNEL_EXCHANGE`;
 
     env.ELASTICIO_OUTPUT_ROUTING_KEY = `${PREFIX}:routing_key:message`;
     env.ELASTICIO_ERROR_ROUTING_KEY = `${PREFIX}:routing_key:error`;
@@ -96,7 +96,7 @@ class AmqpHelper extends EventEmitter {
 
     yield subscriptionChannel.assertQueue(env.ELASTICIO_LISTEN_MESSAGES_ON);
 
-    // yield backChannel.assertQueue(env.ELASTICIO_BACK_CHANNEL);
+    // yield backChannel.assertQueue(env.ELASTICIO_BACKCHANNEL_EXCHANGE);
 
     yield publishChannel.assertQueue(this.nextStepQueue);
     yield publishChannel.assertQueue(this.nextStepErrorQueue);
@@ -109,7 +109,7 @@ class AmqpHelper extends EventEmitter {
     yield subscriptionChannel.assertExchange(env.ELASTICIO_LISTEN_MESSAGES_ON, 'direct', exchangeOptions);
     yield publishChannel.assertExchange(env.ELASTICIO_PUBLISH_MESSAGES_TO, 'direct', exchangeOptions);
 
-    // yield backChannel.assertExchange(env.ELASTICIO_BACK_CHANNEL, 'direct', exchangeOptions);
+    // yield backChannel.assertExchange(env.ELASTICIO_BACKCHANNEL_EXCHANGE, 'direct', exchangeOptions);
 
     yield subscriptionChannel.bindQueue(
       env.ELASTICIO_LISTEN_MESSAGES_ON,
@@ -118,8 +118,8 @@ class AmqpHelper extends EventEmitter {
     );
 
     // yield backChannel.bindQueue(
-    //     env.ELASTICIO_BACK_CHANNEL,
-    //     env.ELASTICIO_BACK_CHANNEL,
+    //     env.ELASTICIO_BACKCHANNEL_EXCHANGE,
+    //     env.ELASTICIO_BACKCHANNEL_EXCHANGE,
     //     '*');
 
     yield publishChannel.bindQueue(
@@ -146,7 +146,7 @@ class AmqpHelper extends EventEmitter {
     yield publishChannel.purgeQueue(this.httpReplyQueueName);
     yield publishChannel.purgeQueue(env.ELASTICIO_LISTEN_MESSAGES_ON);
 
-    // yield backChannel.purgeQueue(env.ELASTICIO_BACK_CHANNEL);
+    // yield backChannel.purgeQueue(env.ELASTICIO_BACKCHANNEL_EXCHANGE);
 
     this.subscriptionChannel = subscriptionChannel;
 
@@ -254,7 +254,7 @@ class AmqpHelperGlobal extends EventEmitter {
     env.ELASTICIO_LISTEN_MESSAGES_ON = `${PREFIX}:messages`;
     env.ELASTICIO_PUBLISH_MESSAGES_TO = `${PREFIX}:exchange`;
 
-    env.ELASTICIO_BACK_CHANNEL = `${PREFIX}:back_channel`;
+    env.ELASTICIO_BACKCHANNEL_EXCHANGE = `${PREFIX}:BACKCHANNEL_EXCHANGE`;
 
     env.ELASTICIO_OUTPUT_ROUTING_KEY = `${PREFIX}:routing_key:output`;
     env.ELASTICIO_ERROR_ROUTING_KEY = `${PREFIX}:routing_key:error`;
@@ -308,7 +308,7 @@ class AmqpHelperGlobal extends EventEmitter {
 
     yield subscriptionChannel.assertQueue(env.ELASTICIO_LISTEN_MESSAGES_ON);
 
-    // yield backChannel.assertQueue(env.ELASTICIO_BACK_CHANNEL);
+    // yield backChannel.assertQueue(env.ELASTICIO_BACKCHANNEL_EXCHANGE);
 
     yield publishChannel.assertQueue(this.nextStepQueue);
     yield publishChannel.assertQueue(this.nextStepErrorQueue);
@@ -319,9 +319,9 @@ class AmqpHelperGlobal extends EventEmitter {
     };
 
     yield subscriptionChannel.assertExchange(env.ELASTICIO_LISTEN_MESSAGES_ON, 'direct', exchangeOptions);
-    yield publishChannel.assertExchange(env.ELASTICIO_BACK_CHANNEL, 'direct', exchangeOptions);
+    yield publishChannel.assertExchange(env.ELASTICIO_BACKCHANNEL_EXCHANGE, 'direct', exchangeOptions);
 
-    // yield backChannel.assertExchange(env.ELASTICIO_BACK_CHANNEL, 'direct', exchangeOptions);
+    // yield backChannel.assertExchange(env.ELASTICIO_BACKCHANNEL_EXCHANGE, 'direct', exchangeOptions);
 
     yield subscriptionChannel.bindQueue(
       env.ELASTICIO_LISTEN_MESSAGES_ON,
@@ -330,26 +330,26 @@ class AmqpHelperGlobal extends EventEmitter {
     );
 
     // yield backChannel.bindQueue(
-    //     env.ELASTICIO_BACK_CHANNEL,
-    //     env.ELASTICIO_BACK_CHANNEL,
+    //     env.ELASTICIO_BACKCHANNEL_EXCHANGE,
+    //     env.ELASTICIO_BACKCHANNEL_EXCHANGE,
     //     '*');
 
     yield publishChannel.bindQueue(
       this.nextStepQueue,
-      env.ELASTICIO_BACK_CHANNEL,
+      env.ELASTICIO_BACKCHANNEL_EXCHANGE,
       env.ELASTICIO_OUTPUT_ROUTING_KEY,
     );
 
     yield publishChannel.bindQueue(
       this.nextStepErrorQueue,
-      env.ELASTICIO_BACK_CHANNEL,
+      env.ELASTICIO_BACKCHANNEL_EXCHANGE,
       env.ELASTICIO_ERROR_ROUTING_KEY,
     );
 
     yield publishChannel.assertQueue(this.httpReplyQueueName);
     yield publishChannel.bindQueue(
       this.httpReplyQueueName,
-      env.ELASTICIO_BACK_CHANNEL,
+      env.ELASTICIO_BACKCHANNEL_EXCHANGE,
       this.httpReplyQueueRoutingKey,
     );
 
@@ -358,7 +358,7 @@ class AmqpHelperGlobal extends EventEmitter {
     yield publishChannel.purgeQueue(this.httpReplyQueueName);
     yield publishChannel.purgeQueue(env.ELASTICIO_LISTEN_MESSAGES_ON);
 
-    // yield backChannel.purgeQueue(env.ELASTICIO_BACK_CHANNEL);
+    // yield backChannel.purgeQueue(env.ELASTICIO_BACKCHANNEL_EXCHANGE);
 
     this.subscriptionChannel = subscriptionChannel;
 
@@ -477,6 +477,7 @@ function prepareEnv() {
 
   env.ELASTICIO_MESSAGE_CRYPTO_PASSWORD = 'testCryptoPassword';
   env.ELASTICIO_MESSAGE_CRYPTO_IV = 'iv=any16_symbols';
+  env.ELASTICIO_BACKCHANNEL_EXCHANGE = `${PREFIX}:BACKCHANNEL_EXCHANGE`;
 
   env.DEBUG = 'sailor:debug';
 }

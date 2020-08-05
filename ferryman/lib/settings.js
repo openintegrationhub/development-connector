@@ -21,11 +21,21 @@ function readFrom(envVars) {
     // 'API_KEY',
   ];
 
+  const requiredForOldSailor = [
+    'FLOW_ID',
+    'EXEC_ID',
+    'STEP_ID',
+    'USER_ID',
+    'API_USERNAME',
+    'API_KEY',
+    'FUNCTION',
+  ];
+
   const requiredForMessageProcessing = [
     'AMQP_URI',
     'LISTEN_MESSAGES_ON',
     'PUBLISH_MESSAGES_TO',
-    // 'BACKCHANNEL_EXCHANGE',
+    'BACKCHANNEL_EXCHANGE',
 
     'OUTPUT_ROUTING_KEY',
     'ERROR_ROUTING_KEY',
@@ -79,6 +89,15 @@ function readFrom(envVars) {
       throw new Error(`${envVarName} is missing`);
     }
     result[key] = envVars[envVarName];
+  });
+
+  const oldSailorList = requiredForOldSailor.slice(0);
+
+  oldSailorList.forEach((key) => {
+    const envVarName = PREFIX + key;
+    if (envVars[envVarName]) {
+      result[key] = envVars[envVarName];
+    }
   });
 
   _.forEach(optional, (defaultValue, key) => {
