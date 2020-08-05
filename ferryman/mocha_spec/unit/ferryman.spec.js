@@ -4,6 +4,8 @@
 const chai = require('chai');
 const sinon = require('sinon');
 
+const jwt = require('jsonwebtoken');
+
 const { expect } = chai;
 chai.use(require('sinon-chai'));
 
@@ -86,18 +88,18 @@ describe('Ferryman', () => {
     beforeEach(() => {
       ferryman = new Ferryman(settings);
     });
-    it('should copy stepId header', () => {
-      const stepId = 'step_1';
-      const result = ferryman.readIncomingMessageHeaders({
-        properties: {
-          headers: {
-            stepId,
-          },
-        },
-      });
-
-      expect(result).to.include({ stepId });
-    });
+    // it('should copy stepId header', () => {
+    //   const stepId = 'step_1';
+    //   const result = ferryman.readIncomingMessageHeaders({
+    //     properties: {
+    //       headers: {
+    //         stepId,
+    //       },
+    //     },
+    //   });
+    //
+    //   expect(result).to.include({ stepId });
+    // });
 
     it('should copy messageId header', () => {
       const messageId = 'message_1234';
@@ -205,6 +207,15 @@ describe('Ferryman', () => {
       };
       sandbox.stub(amqp, 'Amqp').returns(fakeAMQPConnection);
 
+      const orchestratorToken = jwt.sign({
+        flowId: '5559edd38968ec0736000003',
+        stepId: 'step_1',
+        userId: '5559edd38968ec0736000002',
+        function: 'init_trigger',
+        apiKey: '123456',
+        apiUsername: 'someuser@openintegrationhub.com',
+      }, 'somesecret');
+
       payload = { param1: 'Value1' };
       message = {
         fields: {
@@ -224,7 +235,8 @@ describe('Ferryman', () => {
             threadId: uuid.v4(),
             messageId: uuid.v4(),
             parentMessageId: uuid.v4(),
-            stepId: 'step_1',
+            // stepId: 'step_1',
+            orchestratorToken,
           },
           deliveryMode: undefined,
           priority: undefined,
