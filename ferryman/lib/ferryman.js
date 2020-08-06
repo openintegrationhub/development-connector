@@ -311,6 +311,8 @@ class Ferryman {
     this.apiKey = tokenData.apiKey;
     this.apiUsername = tokenData.apiUsername;
 
+    this.snapshotRoutingKey = tokenData.snapshotRoutingKey;
+
     // 'FLOW_ID',
     // 'EXEC_ID', // deprecated
     // 'STEP_ID',
@@ -526,7 +528,7 @@ class Ferryman {
             return log.warn('ERROR: $set is not supported any more in `updateSnapshot` event');
           }
           _.extend(self.snapshot, data); // updating `local` snapshot
-          return self.amqpConnection.sendSnapshot(data, headers);
+          return self.amqpConnection.sendSnapshot(data, headers, null, this.snapshotRoutingKey);
         }
         log.error('You should pass an object to the `updateSnapshot` event');
         return false;

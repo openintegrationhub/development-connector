@@ -29,6 +29,7 @@ function makeOrchestratorToken(action) {
     function: action,
     apiKey: '123456',
     apiUsername: 'someuser@openintegrationhub.com',
+    snapshotRoutingKey: '559edd38968ec0736000003:step_1:1432205514864:snapshot',
   }, 'somesecret');
 }
 
@@ -62,7 +63,7 @@ describe('Ferryman', () => {
     envVars.ELASTICIO_OUTPUT_ROUTING_KEY = '5559edd38968ec0736000003:step_1:1432205514864:output';
     envVars.ELASTICIO_ERROR_ROUTING_KEY = '5559edd38968ec0736000003:step_1:1432205514864:error';
     envVars.ELASTICIO_REBOUND_ROUTING_KEY = '5559edd38968ec0736000003:step_1:1432205514864:rebound';
-    envVars.ELASTICIO_SNAPSHOT_ROUTING_KEY = '5559edd38968ec0736000003:step_1:1432205514864:snapshot';
+    // envVars.ELASTICIO_SNAPSHOT_ROUTING_KEY = '5559edd38968ec0736000003:step_1:1432205514864:snapshot';
 
     envVars.ELASTICIO_COMPONENT_PATH = '/spec/component';
     envVars.ELASTICIO_DEBUG = 'Ferryman';

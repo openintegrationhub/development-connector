@@ -380,10 +380,10 @@ class Amqp {
     }
   }
 
-  async sendSnapshot(data, headers, throttle) {
+  async sendSnapshot(data, headers, throttle, passedRoutingKey) {
     const { settings } = this;
     const exchange = settings.PUBLISH_MESSAGES_TO;
-    const routingKey = settings.SNAPSHOT_ROUTING_KEY;
+    const routingKey = (passedRoutingKey) || settings.SNAPSHOT_ROUTING_KEY;
     const payload = JSON.stringify(data);
     const properties = this._createPropsFromHeaders(headers);
     return this.sendToExchange(exchange, routingKey, payload, properties, throttle);
