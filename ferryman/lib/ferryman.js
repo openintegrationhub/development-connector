@@ -186,25 +186,28 @@ class Ferryman {
   }
 
   invokeModuleFunction(moduleFunction, data, passedFunction) {
-    const { settings } = this;
+    // const { settings } = this;
     const { stepData } = this;
     return co(function* gen() {
-      const module = yield this.componentReader.loadTriggerOrAction(
-        passedFunction || settings.FUNCTION,
-      );
-      if (!module[moduleFunction]) {
-        log.warn(module);
-        log.warn(`invokeModuleFunction – ${moduleFunction} is not found`);
-        return Promise.resolve();
-      }
-      const cfg = _.cloneDeep(stepData.config) || {};
-      return new Promise((resolve, reject) => {
-        try {
-          resolve(module[moduleFunction](cfg, data));
-        } catch (e) {
-          reject(e);
+      if (moduleFunction !== 'init' || this.function || passedFunction) {
+        const module = yield this.componentReader.loadTriggerOrAction(
+          passedFunction || this.function,
+        );
+        if (!module[moduleFunction]) {
+          log.warn(module);
+          log.warn(`invokeModuleFunction – ${moduleFunction} is not found`);
+          return Promise.resolve();
         }
-      });
+        const cfg = _.cloneDeep(stepData.config) || {};
+        return new Promise((resolve, reject) => {
+          try {
+            resolve(module[moduleFunction](cfg, data));
+          } catch (e) {
+            reject(e);
+          }
+        });
+      }
+      return Promise.resolve();
     }.bind(this));
   }
 
