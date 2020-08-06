@@ -26,11 +26,11 @@ async function putOutToSea(settings) {
   await ferryman.prepare();
 
   // eslint-disable-next-line no-extra-boolean-cast
-  if (!!settings.STARTUP_REQUIRED) {
-    await ferryman.startup();
-  }
+  // if (!!settings.STARTUP_REQUIRED) {
+  //   await ferryman.startup();
+  // }
 
-  await ferryman.runHookInit();
+  // await ferryman.runHookInit();
 
   await ferryman.run();
 }
@@ -75,6 +75,7 @@ async function run(settings) {
   try {
     await putOutToSea(settings);
   } catch (e) {
+    console.log(e);
     if (ferryman) {
       await ferryman.reportError(e);
     }

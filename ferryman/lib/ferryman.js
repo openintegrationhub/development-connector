@@ -10,7 +10,7 @@ const pThrottle = require('p-throttle');
 const jwt = require('jsonwebtoken');
 
 const request = require('request-promise').defaults({ simple: false });
-const hooksData = require('./hooksData');
+// const hooksData = require('./hooksData');
 const cipher = require('./cipher.js');
 const log = require('./logging.js');
 const { TaskExec } = require('./executor.js');
@@ -141,49 +141,49 @@ class Ferryman {
     return this.amqpConnection.sendError(err, headers);
   }
 
-  startup() {
-    return co(function* doStartup() {
-      log.debug('Starting up component');
-      const result = yield this.invokeModuleFunction('startup');
-      log.trace('Startup data', { result });
-      const handle = hooksData.startup(this.settings);
-      try {
-        const state = _.isEmpty(result) ? {} : result;
-        yield handle.create(state);
-      } catch (e) {
-        if (e.statusCode === 409) {
-          log.warn('Startup data already exists. Rewriting.');
-          yield handle.delete();
-          yield handle.create(result);
-        } else {
-          log.warn('Component starting error');
-          throw e;
-        }
-      }
-      log.debug('Component started up');
-      return result;
-    }.bind(this));
-  }
+  // startup() {
+  //   return co(function* doStartup() {
+  //     log.debug('Starting up component');
+  //     const result = yield this.invokeModuleFunction('startup');
+  //     log.trace('Startup data', { result });
+  //     const handle = hooksData.startup(this.settings);
+  //     try {
+  //       const state = _.isEmpty(result) ? {} : result;
+  //       yield handle.create(state);
+  //     } catch (e) {
+  //       if (e.statusCode === 409) {
+  //         log.warn('Startup data already exists. Rewriting.');
+  //         yield handle.delete();
+  //         yield handle.create(result);
+  //       } else {
+  //         log.warn('Component starting error');
+  //         throw e;
+  //       }
+  //     }
+  //     log.debug('Component started up');
+  //     return result;
+  //   }.bind(this));
+  // }
 
-  runHookShutdown() {
-    return co(function* doShutdown() {
-      log.debug('About to shut down');
-      const handle = hooksData.startup(this.settings);
-      const state = yield handle.retrieve();
-      yield this.invokeModuleFunction('shutdown', state);
-      yield handle.delete();
-      log.debug('Shut down successfully');
-    }.bind(this));
-  }
+  // runHookShutdown() {
+  //   return co(function* doShutdown() {
+  //     log.debug('About to shut down');
+  //     // const handle = hooksData.startup(this.settings);
+  //     const state = yield handle.retrieve();
+  //     yield this.invokeModuleFunction('shutdown', state);
+  //     yield handle.delete();
+  //     log.debug('Shut down successfully');
+  //   }.bind(this));
+  // }
 
-  runHookInit() {
-    return co(function* doInit() {
-      log.debug('About to initialize component for execution');
-      const res = yield this.invokeModuleFunction('init');
-      log.debug('Component execution initialized successfully');
-      return res;
-    }.bind(this));
-  }
+  // runHookInit() {
+  //   return co(function* doInit() {
+  //     log.debug('About to initialize component for execution');
+  //     const res = yield this.invokeModuleFunction('init');
+  //     log.debug('Component execution initialized successfully');
+  //     return res;
+  //   }.bind(this));
+  // }
 
   invokeModuleFunction(moduleFunction, data, passedFunction) {
     // const { settings } = this;
