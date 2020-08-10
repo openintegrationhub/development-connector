@@ -34,7 +34,7 @@ function readFrom(envVars) {
   const requiredForMessageProcessing = [
     'AMQP_URI',
     'LISTEN_MESSAGES_ON',
-    'PUBLISH_MESSAGES_TO',
+    // 'PUBLISH_MESSAGES_TO',
     'BACKCHANNEL_EXCHANGE',
 
     'OUTPUT_ROUTING_KEY',
