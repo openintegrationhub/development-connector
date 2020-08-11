@@ -326,7 +326,13 @@ class Ferryman {
 
     // get snapshot
     let stepData = await this.getSnapShot(this.flowId, this.stepId, this.apiKey); // token
-    this.snapshot = stepData.snapshot;
+
+    if (stepData) {
+      this.snapshot = stepData.snapshot;
+    } else {
+      this.snapshot = {};
+    }
+
     this.stepData = Object.assign({}, this.stepData, stepData);
     // todo: Find a way to do this without overwriting this.stepData
     // console.log(message)

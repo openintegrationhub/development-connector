@@ -156,7 +156,7 @@ class Amqp {
       );
       if (!result) {
         log.warn('Buffer full when publishing a message to '
-                    + 'exchange=%s with routingKey=%s', exchangeName, routingKey);
+          + 'exchange=%s with routingKey=%s', exchangeName, routingKey);
       }
       return result;
     } catch (error) {
@@ -243,7 +243,7 @@ class Amqp {
 
     if (encryptedData.length > settings.OUTGOING_MESSAGE_SIZE_LIMIT) {
       const error = new Error(`Outgoing message size ${encryptedData.length}`
-                + ` exceeds limit of ${settings.OUTGOING_MESSAGE_SIZE_LIMIT}.`);
+        + ` exceeds limit of ${settings.OUTGOING_MESSAGE_SIZE_LIMIT}.`);
       log.error(error);
       throw error;
     }
@@ -382,7 +382,7 @@ class Amqp {
 
   async sendSnapshot(data, headers, throttle, passedRoutingKey) {
     const { settings } = this;
-    const exchange = settings.PUBLISH_MESSAGES_TO;
+    const exchange = settings.BACKCHANNEL_EXCHANGE;
     const routingKey = (passedRoutingKey) || settings.SNAPSHOT_ROUTING_KEY;
     const payload = JSON.stringify(data);
     const properties = this._createPropsFromHeaders(headers);
