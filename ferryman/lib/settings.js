@@ -29,6 +29,7 @@ function readFrom(envVars) {
     'API_USERNAME',
     'API_KEY',
     'FUNCTION',
+    'SNAPSHOT_ROUTING_KEY',
   ];
 
   const requiredForMessageProcessing = [
@@ -40,7 +41,7 @@ function readFrom(envVars) {
     'OUTPUT_ROUTING_KEY',
     'ERROR_ROUTING_KEY',
     'REBOUND_ROUTING_KEY',
-    'SNAPSHOT_ROUTING_KEY',
+    // 'SNAPSHOT_ROUTING_KEY',
   ];
 
   const optional = {
