@@ -1,9 +1,5 @@
-<p align="center">
-  <img src="https://github.com/openintegrationhub/openintegrationhub/blob/master/Assets/medium-oih-einzeilig-zentriert.jpg" alt="Open Integration Hub (OIH)" width="400"/>
-</p>
+# Replace with Ferryman
 
-Open source framework for easy data synchronization between business applications.
+Please place a working copy of the ferryman here. The copy will then be used by the development connector.
 
-Visit the official [Open Integration Hub homepage](https://www.openintegrationhub.org/)
-
-This library is based on the [elasticio nodejs sailor](https://github.com/elasticio/sailor-nodejs). It offers the same baseline functionalities, but is being expanded further with capabilities specific to the Open Integration Hub framework.
+[https://github.com/openintegrationhub/openintegrationhub/tree/master/lib/ferryman](https://github.com/openintegrationhub/openintegrationhub/tree/master/lib/ferryman)
