@@ -1,5 +1,5 @@
 
-FILE=/ferryman/runGlobal.js
+FILE=ferryman/runGlobal.js
 if [ -f "$FILE" ]; then
     echo "Custom ferryman found starting...."
     node ./ferryman/runGlobal.js
