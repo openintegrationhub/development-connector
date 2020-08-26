@@ -16,7 +16,7 @@
     "integration"
   ],
   "scripts": {
-    "start": "node ./ferryman/runGlobal.js",
+    "start": "./start.sh",
     "pretest": "eslint lib test --ext .json --ext .js --fix",
     "test": "NODE_ENV=test mocha test/*",
     "test-watch": "nodemon --exec \"npm test \""
@@ -26,6 +26,7 @@
     "npm": ">=5.4"
   },
   "dependencies": {
+    "@openintegrationhub/ferryman": "^1.0.4",
     "@elastic.io/jsonata-moment": "1.0.15",
     "bunyan": "^1.8.12",
     "bunyan-format": "^0.2.1",
