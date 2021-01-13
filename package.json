@@ -17,8 +17,8 @@
   ],
   "scripts": {
     "start": "./start.sh",
-    "pretest": "eslint lib test --ext .json --ext .js --fix",
-    "test": "NODE_ENV=test mocha test/*",
+    "pretest": "eslint lib --ext .json --ext .js --fix",
+    "test": "echo 'No Tests!'",
     "test-watch": "nodemon --exec \"npm test \""
   },
   "engines": {
@@ -27,12 +27,8 @@
   },
   "dependencies": {
     "@openintegrationhub/ferryman": "^1.0.4",
-    "@elastic.io/jsonata-moment": "1.0.15",
     "bunyan": "^1.8.12",
-    "bunyan-format": "^0.2.1",
-    "jsonata": "^1.5.3",
-    "q": "^1.5.1",
-    "uuid": "^8.2.0"
+    "bunyan-format": "^0.2.1"
   },
   "devDependencies": {
     "chai": "^3.5.0",
