@@ -28,7 +28,8 @@
   "dependencies": {
     "@openintegrationhub/ferryman": "^1.0.4",
     "bunyan": "^1.8.12",
-    "bunyan-format": "^0.2.1"
+    "bunyan-format": "^0.2.1",
+    "uuid": "8.3.2"
   },
   "devDependencies": {
     "chai": "^3.5.0",
