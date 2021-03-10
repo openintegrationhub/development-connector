@@ -1,6 +1,6 @@
 {
   "name": "@openintegrationhub/test-transformer",
-  "version": "0.0.2",
+  "version": "0.0.3",
   "description": "OIH Test Transformer",
   "homepage": "https://snazzycontacts.com/",
   "author": {
@@ -26,7 +26,7 @@
     "npm": ">=5.4"
   },
   "dependencies": {
-    "@openintegrationhub/ferryman": "^1.0.4",
+    "@openintegrationhub/ferryman": "*",
     "bunyan": "^1.8.12",
     "bunyan-format": "^0.2.1",
     "uuid": "8.3.2"
